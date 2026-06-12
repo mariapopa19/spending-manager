@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: spending_manager
+      POSTGRES_USER: spending_manager
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spending}  # local-only, fine
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
