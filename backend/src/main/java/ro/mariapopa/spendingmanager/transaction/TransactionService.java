@@ -1,12 +1,19 @@
 package ro.mariapopa.spendingmanager.transaction;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mariapopa.spendingmanager.category.Category;
+import ro.mariapopa.spendingmanager.category.CategoryNotFoundException;
 import ro.mariapopa.spendingmanager.category.CategoryRepository;
 import ro.mariapopa.spendingmanager.category.CategoryResponse;
 import ro.mariapopa.spendingmanager.person.Person;
+import ro.mariapopa.spendingmanager.person.PersonNotFoundException;
 import ro.mariapopa.spendingmanager.person.PersonRepository;
+
+import java.util.Currency;
+import java.util.List;
 
 @Service
 @Transactional
@@ -19,6 +26,62 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
         this.personRepository = personRepository;
+    }
+    @Transactional(readOnly = true)
+    public Page<TransactionResponse> findAll(Pageable pageable) {
+        return transactionRepository.findAll(pageable)
+                .map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public TransactionResponse findById(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException(id));
+        return toResponse(transaction);
+    }
+
+    public TransactionResponse create(TransactionRequest transactionRequest) {
+        Transaction transaction = new Transaction();
+        applyRequest(transaction, transactionRequest);
+
+        Transaction saved = transactionRepository.save(transaction);
+        return toResponse(saved);
+    }
+
+    public TransactionResponse update(Long id, TransactionRequest transactionRequest) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException(id));
+        applyRequest(transaction, transactionRequest);
+        return toResponse(transaction);
+    }
+
+    public void delete(Long id) {
+        if(!transactionRepository.existsById(id)) {
+            throw new TransactionNotFoundException(id);
+        }
+        transactionRepository.deleteById(id);
+    }
+
+    private void applyRequest(Transaction transaction, TransactionRequest transactionRequest) {
+        transaction.setDate(transactionRequest.date());
+        transaction.setAmount(transactionRequest.amount());
+        transaction.setCurrency(transactionRequest.currency());
+        transaction.setDescription(transactionRequest.description());
+        transaction.setMerchant(transactionRequest.merchant());
+        transaction.setSource(transactionRequest.source());
+
+        Person person = personRepository.findById(transactionRequest.personId())
+                .orElseThrow(() -> new PersonNotFoundException(transactionRequest.personId()));
+        transaction.setPerson(person);
+
+        if(transactionRequest.categoryId() != null) {
+            Category category = categoryRepository.findById(transactionRequest.categoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(transactionRequest.categoryId()));
+            transaction.setCategory(category);
+        } else {
+            transaction.setCategory(null);
+        }
+
     }
 
     private TransactionResponse toResponse(Transaction transaction) {
