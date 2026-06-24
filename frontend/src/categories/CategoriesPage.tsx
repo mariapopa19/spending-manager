@@ -1,31 +1,66 @@
 import { useState } from "react";
-import { useCategories, useCreateCategory, useDeleteCategory } from "./api";
+import {
+  useCategories,
+  useCreateCategory,
+  useDeleteCategory,
+  useUpdateCategory,
+  type CategoryInput,
+} from "./api";
 
 export const CategoriesPage = () => {
   const { data: categories, isLoading, isError, error } = useCategories(); // data: categories - rename data variable
   const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
 
   const [name, setName] = useState("");
   const [color, setColor] = useState("#64B5F6");
   const [budget, setBudget] = useState("");
+  const [editId, setEditId] = useState<number | null>(null);
+
+  const resetForm = () => {
+    setEditId(null);
+    setName("");
+    setColor("#64B5F6");
+    setBudget("");
+  };
 
   const handleAdd = () => {
     if (name.trim() === "") return;
-    createCategory.mutate(
-      {
+    if (editId === null) {
+      createCategory.mutate(
+        {
+          name: name.trim(),
+          color,
+          monthlyBudget: budget ? Number(budget) : null,
+        },
+        {
+          onSuccess: resetForm,
+        },
+      );
+    } else {
+      const input: CategoryInput = {
         name: name.trim(),
         color,
         monthlyBudget: budget ? Number(budget) : null,
-      },
-      {
-        onSuccess: () => {
-          setName("");
-          setBudget("");
+      };
+      updateCategory.mutate(
+        {
+          id: editId,
+          input,
         },
-      },
-    );
+        {
+          onSuccess: resetForm,
+        },
+      );
+    }
   };
+
+  const isEditing = editId !== null;
+  const isSubmitting = isEditing
+    ? updateCategory.isPending
+    : createCategory.isPending;
+  const submitLabel = isSubmitting ? "..." : isEditing ? "Save" : "Add";
 
   if (isLoading) return <p className="p-4">Loading...</p>;
   if (isError)
@@ -33,9 +68,9 @@ export const CategoriesPage = () => {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2x1 font-bold mb-4">Categories</h1>
+      <h1 className="text-2xl font-bold mb-4">Categories</h1>
 
-      {/* add form */}
+      {/* Add form */}
       <div className="flex gap-2 mb-6">
         <input
           className="border rounded px-3 py-2 flex-1"
@@ -45,7 +80,7 @@ export const CategoriesPage = () => {
         />
         <input
           type="color"
-          className="border rouded w-12 h-10"
+          className="border rounded  w-12 h-10"
           value={color}
           onChange={(e) => setColor(e.target.value)}
         />
@@ -54,23 +89,32 @@ export const CategoriesPage = () => {
           placeholder="Budget"
           type="number"
           value={budget}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setBudget(e.target.value)}
         />
         <button
           className="bg-blue-600 text-white rounded px-4 py-2 disabled:opacity-50"
           onClick={handleAdd}
-          disabled={createCategory.isPending}
+          disabled={isSubmitting}
         >
-          {createCategory.isPending ? "..." : "Add"}
+          {submitLabel}
         </button>
+        {editId !== null && (
+          <button
+            className="bg-gray-200 text-black rounded px-4 py-2 disabled:opacity-50"
+            onClick={resetForm}
+          >
+            Cancel
+          </button>
+        )}
       </div>
 
-      {/* table */}
+      {/* Table */}
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b text-left">
             <th className="py-2">Category</th>
             <th className="py-2 text-right">Monthly budget</th>
+            <th className="py-2 w-20"></th>
             <th className="py-2 w-20"></th>
           </tr>
         </thead>
@@ -98,6 +142,20 @@ export const CategoriesPage = () => {
                   disabled={deleteCategory.isPending}
                 >
                   Delete
+                </button>
+              </td>
+              <td className="py-2 text-right">
+                {" "}
+                <button
+                  className="text-blue-600 hover:underline disabled:opacity-50"
+                  onClick={() => {
+                    setEditId(category.id);
+                    setName(category.name);
+                    setColor(category.color ?? "#64B5F6");
+                    setBudget(category.monthlyBudget?.toString() ?? "");
+                  }}
+                >
+                  Edit
                 </button>
               </td>
             </tr>

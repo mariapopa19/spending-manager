@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Page, Source, Transaction } from "../types/domain";
 import { api } from "../lib/apiClient";
+import type { UpdateArgs } from "../lib/api.types";
 
 export type TransactionInput = {
   date: string;
@@ -30,6 +31,19 @@ export const useCreateTransaction = () => {
   return useMutation({
     mutationFn: async (input: TransactionInput) => {
       const response = await api.post<Transaction>("/transactions", input);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+};
+
+export const useUpdateTransaction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, input }: UpdateArgs<TransactionInput>) => {
+      const response = await api.put<Transaction>(`/transactions/${id}`, input);
       return response.data;
     },
     onSuccess: () => {
