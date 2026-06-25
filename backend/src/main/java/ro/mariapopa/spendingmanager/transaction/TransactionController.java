@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,16 +38,17 @@ public class TransactionController {
     public ResponseEntity<TransactionResponse> create(@Valid @RequestBody TransactionRequest request) {
         TransactionResponse created = transactionService.create(request);
         return ResponseEntity
-                .created(URI.create("/api/transactions" + created.id()))
+                .created(URI.create("/api/transactions/" + created.id()))
                 .body(created);
     }
 
     @PutMapping("/{id}")
-    public TransactionResponse update(@PathVariable Long id, @RequestBody TransactionRequest request) {
+    public TransactionResponse update(@PathVariable Long id, @Valid @RequestBody TransactionRequest request) {
         return transactionService.update(id, request);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         transactionService.delete(id);
     }

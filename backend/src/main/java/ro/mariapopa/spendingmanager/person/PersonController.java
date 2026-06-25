@@ -31,7 +31,7 @@ public class PersonController {
     public ResponseEntity<PersonResponse> create(@Valid @RequestBody PersonRequest request) {
         PersonResponse created = personService.create(request);
         return ResponseEntity
-                .created(URI.create("/api/persons" + created.id()))
+                .created(URI.create("/api/persons/" + created.id()))
                 .body(created);
     }
 
