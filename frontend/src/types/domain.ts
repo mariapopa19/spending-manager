@@ -1,41 +1,40 @@
 export type Person = {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 };
 
 export type Category = {
-    id: number;
-    name: string;
-    color: string;
-    monthlyBudget: number;
+  id: number;
+  name: string;
+  color: string | null;
+  monthlyBudget: number | null;
 };
 
 export type Transaction = {
-    id: number;
-    date: string;
-    amount: number;
-    currency: string;
-    description: string;
-    merchant: string | null;
-    categoryId: number | null;
-    categoryName: string | null;
-    categoryColor: string | null;
-    personId: number;
-    personName: string;
-    source: Source;
-    importHash: string | null;
-    crearedAt: string;
-}
+  id: number;
+  date: string;
+  amount: number;
+  currency: string;
+  description: string;
+  merchant: string | null;
+  categoryId: number | null;
+  categoryName: string | null;
+  categoryColor: string | null;
+  personId: number;
+  personName: string;
+  source: Source;
+  importHash: string | null;
+  createdAt: string;
+};
 
 export type Page<T> = {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-    number: number;
-    size: number;
-    first: boolean;
-    last: boolean;
-}
-
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+};
 
 export type Source = "REVOLUT" | "BT_PAY" | "BCR_GEORGE" | "MANUAL";

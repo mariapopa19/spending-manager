@@ -179,7 +179,7 @@ export const TransactionsPage = () => {
         </thead>
         <tbody>
           {pageData?.content.map((transaction: Transaction) => (
-            <tr key={transaction.id} className="boarder-b">
+            <tr key={transaction.id} className="border-b">
               <td className="py-2">{transaction.date}</td>
               <td className="py-2">{transaction.description}</td>
               <td className="py-2">
