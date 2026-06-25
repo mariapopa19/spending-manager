@@ -37,8 +37,9 @@ public class Transaction {
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String source;
+    private Source source;
 
     @Column(name = "import_hash", unique = true, length = 64)
     private String importHash;
@@ -113,11 +114,11 @@ public class Transaction {
         this.person = person;
     }
 
-    public String getSource() {
+    public Source getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public void setSource(Source source) {
         this.source = source;
     }
 

@@ -29,7 +29,7 @@ create table transaction
     merchant    varchar(255),                    -- cleaned display name
     category_id bigint references category (id), -- nullable = needs review
     person_id   bigint         not null references person (id),
-    source      varchar(50)    not null,         -- REVOLUT / BT_PAY / BCR_GEORGE / MANFUAL
+    source      varchar(50)    not null,         -- REVOLUT / BT_PAY / BCR_GEORGE / MANUAL
     import_hash varchar(64) unique,              -- sha-256(date|amount|currency|description|source)
     created_at  timestamptz    not null default now()
 );

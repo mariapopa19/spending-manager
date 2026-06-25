@@ -16,7 +16,7 @@ public record TransactionResponse(
         String categoryColor,
         Long personId,
         String personName,
-        String source,
+        Source source,
         String importHash,
         Instant createdAt
 ) {
