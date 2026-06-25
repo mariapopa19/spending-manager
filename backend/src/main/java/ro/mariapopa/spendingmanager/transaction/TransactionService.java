@@ -5,15 +5,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mariapopa.spendingmanager.category.Category;
-import ro.mariapopa.spendingmanager.category.CategoryNotFoundException;
 import ro.mariapopa.spendingmanager.category.CategoryRepository;
-import ro.mariapopa.spendingmanager.category.CategoryResponse;
+import ro.mariapopa.spendingmanager.common.ResourceNotFoundException;
 import ro.mariapopa.spendingmanager.person.Person;
-import ro.mariapopa.spendingmanager.person.PersonNotFoundException;
 import ro.mariapopa.spendingmanager.person.PersonRepository;
-
-import java.util.Currency;
-import java.util.List;
 
 @Service
 @Transactional
@@ -27,6 +22,7 @@ public class TransactionService {
         this.categoryRepository = categoryRepository;
         this.personRepository = personRepository;
     }
+
     @Transactional(readOnly = true)
     public Page<TransactionResponse> findAll(Pageable pageable) {
         return transactionRepository.findAll(pageable)
@@ -36,7 +32,7 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public TransactionResponse findById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
         return toResponse(transaction);
     }
 
@@ -50,14 +46,14 @@ public class TransactionService {
 
     public TransactionResponse update(Long id, TransactionRequest transactionRequest) {
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
         applyRequest(transaction, transactionRequest);
         return toResponse(transaction);
     }
 
     public void delete(Long id) {
-        if(!transactionRepository.existsById(id)) {
-            throw new TransactionNotFoundException(id);
+        if (!transactionRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Transaction", id);
         }
         transactionRepository.deleteById(id);
     }
@@ -71,12 +67,12 @@ public class TransactionService {
         transaction.setSource(transactionRequest.source());
 
         Person person = personRepository.findById(transactionRequest.personId())
-                .orElseThrow(() -> new PersonNotFoundException(transactionRequest.personId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Person", transactionRequest.personId()));
         transaction.setPerson(person);
 
-        if(transactionRequest.categoryId() != null) {
+        if (transactionRequest.categoryId() != null) {
             Category category = categoryRepository.findById(transactionRequest.categoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException(transactionRequest.categoryId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", transactionRequest.categoryId()));
             transaction.setCategory(category);
         } else {
             transaction.setCategory(null);

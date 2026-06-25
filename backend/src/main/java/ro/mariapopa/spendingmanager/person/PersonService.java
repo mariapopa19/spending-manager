@@ -2,6 +2,7 @@ package ro.mariapopa.spendingmanager.person;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.mariapopa.spendingmanager.common.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class PersonService {
     @Transactional(readOnly = true)
     public PersonResponse findById(Long id) {
         Person person = personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Person", id));
         return toResponse(person);
     }
 
@@ -36,14 +37,14 @@ public class PersonService {
     }
 
     public PersonResponse update(Long id, PersonRequest personRequest) {
-        Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
+        Person person = personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Person", id));
         person.setName(personRequest.name().trim());
         return toResponse(person);
     }
 
     public void delete(Long id) {
         if(!personRepository.existsById(id)) {
-            throw new PersonNotFoundException(id);
+            throw new ResourceNotFoundException("Person", id);
         }
         personRepository.deleteById(id);
     }

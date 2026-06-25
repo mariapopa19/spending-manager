@@ -2,6 +2,7 @@ package ro.mariapopa.spendingmanager.category;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.mariapopa.spendingmanager.common.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryResponse findById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
         return toResponse(category);
     }
 
@@ -38,7 +39,7 @@ public class CategoryService {
     }
 
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", id));
         category.setName(categoryRequest.name().trim());
         category.setColor(categoryRequest.color());
         category.setMonthlyBudget(categoryRequest.monthlyBudget());
@@ -47,7 +48,7 @@ public class CategoryService {
 
     public void delete(Long id) {
         if(!categoryRepository.existsById(id)) {
-            throw new CategoryNotFoundException(id);
+            throw new ResourceNotFoundException("Category", id);
         }
         categoryRepository.deleteById(id);
     }

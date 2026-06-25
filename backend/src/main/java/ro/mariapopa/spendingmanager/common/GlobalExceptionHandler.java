@@ -1,13 +1,11 @@
 package ro.mariapopa.spendingmanager.common;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ro.mariapopa.spendingmanager.category.CategoryNotFoundException;
-import ro.mariapopa.spendingmanager.person.PersonNotFoundException;
-import ro.mariapopa.spendingmanager.transaction.TransactionNotFoundException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -15,11 +13,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({
-            CategoryNotFoundException.class,
-            PersonNotFoundException.class,
-            TransactionNotFoundException.class
-    })
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(RuntimeException ex) {
         ApiError error = new ApiError(
                 Instant.now(),
@@ -29,6 +23,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -42,5 +37,12 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleConflict(DataIntegrityViolationException ex) {
+        ApiError error = new ApiError(Instant.now(), HttpStatus.CONFLICT.value(),
+                "Resource already exists or violates a constraint", null);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
