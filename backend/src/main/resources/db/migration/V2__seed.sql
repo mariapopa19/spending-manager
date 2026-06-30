@@ -1,7 +1,3 @@
-insert into person (name)
-values ('Cristi'),
-       ('Maria');
-
 insert into category (name, color, monthly_budget)
 values ('Rate', '#E57373', 277.50),
        ('Facturi', '#64B5F6', 700.00),

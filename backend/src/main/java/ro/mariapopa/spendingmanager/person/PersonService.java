@@ -52,7 +52,12 @@ public class PersonService {
     private PersonResponse toResponse(Person person) {
         return new PersonResponse(
                 person.getId(),
-                person.getName()
+                person.getName(),
+                person.getVersion(),
+                person.getCreatedBy(),
+                person.getCreatedDate(),
+                person.getLastModifiedBy(),
+                person.getLastModifiedDate()
         );
     }
 }

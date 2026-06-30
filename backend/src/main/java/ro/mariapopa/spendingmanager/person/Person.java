@@ -1,26 +1,16 @@
 package ro.mariapopa.spendingmanager.person;
 
 import jakarta.persistence.*;
+import ro.mariapopa.spendingmanager.common.entity.AuditableAndSoftDeletedEntity;
 
 @Entity
 @Table(name = "person")
-public class Person {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Person extends AuditableAndSoftDeletedEntity {
 
     @Column(nullable = false)
     private String name;
 
     public Person() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -34,7 +24,7 @@ public class Person {
     @Override
     public String toString() {
         return "Person{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name='" + name + '\'' +
                 '}';
     }

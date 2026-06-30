@@ -1,0 +1,12 @@
+# This .editorconfig works alongside palantir-java-format
+# palantir-java-format handles .java files
+# This config handles everything else
+
+root = true
+
+# Properties files - preserve your formatting
+[*.properties]
+ij_properties_align_group_field_declarations = false
+ij_properties_keep_blank_lines = true
+ij_properties_key_value_delimiter = equals
+ij_properties_spaces_around_key_value_delimiter = true

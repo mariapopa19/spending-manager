@@ -1,7 +1,13 @@
 create table person
 (
-    id   bigserial primary key,
-    name varchar(255) not null
+    id                  bigserial primary key,
+    name                varchar(255) not null,
+    version             integer not null default 1,
+    created_by          varchar(255),
+    created_date        timestamptz,
+    last_modified_by    varchar(255),
+    last_modified_date  timestamptz,
+    deleted_date        timestamptz
 );
 
 create table category
