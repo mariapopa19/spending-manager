@@ -1,5 +1,6 @@
 package ro.mariapopa.spendingmanager.category;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@Tag(name = "Category")
 public class CategoryController {
     private final CategoryService categoryService;
 
