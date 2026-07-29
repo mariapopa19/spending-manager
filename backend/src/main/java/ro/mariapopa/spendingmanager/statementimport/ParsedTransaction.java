@@ -8,6 +8,6 @@ import java.time.LocalDate;
 
 public record ParsedTransaction(
     @NotNull LocalDate date,
-    @NotBlank BigDecimal amount,
+    @NotNull BigDecimal amount,
     @NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "ISO 4217 code, e.g. RON") String currency,
     @NotBlank String description) {}
