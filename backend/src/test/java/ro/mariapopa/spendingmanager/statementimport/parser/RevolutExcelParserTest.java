@@ -1,6 +1,6 @@
-package ro.mariapopa.spendingmanager.statementimport;
+package ro.mariapopa.spendingmanager.statementimport.parser;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +16,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ro.mariapopa.spendingmanager.statementimport.ParsedTransaction;
+import ro.mariapopa.spendingmanager.statementimport.StatementParseException;
 import ro.mariapopa.spendingmanager.transaction.Source;
 
 class RevolutExcelParserTest {

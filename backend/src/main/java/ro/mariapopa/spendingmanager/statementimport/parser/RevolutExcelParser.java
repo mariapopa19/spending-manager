@@ -1,4 +1,4 @@
-package ro.mariapopa.spendingmanager.statementimport;
+package ro.mariapopa.spendingmanager.statementimport.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,10 +6,22 @@ import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
-import org.apache.poi.ss.usermodel.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
+import ro.mariapopa.spendingmanager.statementimport.ParsedTransaction;
+import ro.mariapopa.spendingmanager.statementimport.StatementParseException;
+import ro.mariapopa.spendingmanager.statementimport.StatementParser;
 import ro.mariapopa.spendingmanager.transaction.Source;
 
 @Component
@@ -68,7 +80,7 @@ public class RevolutExcelParser implements StatementParser {
       List<ParsedTransaction> result = new ArrayList<>();
       for (int r = 1; r <= sheet.getLastRowNum(); r++) {
         Row row = sheet.getRow(r);
-        if (row == null) continue;
+        if (row == null || isBlank(row)) continue;
 
         // filter rows in a non-completed state
         String state = readString(row, stateColumn, "State");
@@ -86,6 +98,19 @@ public class RevolutExcelParser implements StatementParser {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+  }
+
+  private boolean isBlank(Row row) {
+    if (row.getFirstCellNum() < 0) return true;
+    for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+      Cell cell = row.getCell(c);
+      if (!(cell == null
+          || cell.getCellType() == CellType.BLANK
+          || cell.getStringCellValue().isBlank())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private int columnIndex(Map<String, Integer> columns, String name) {
