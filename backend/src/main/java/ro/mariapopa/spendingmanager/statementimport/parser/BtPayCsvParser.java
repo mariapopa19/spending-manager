@@ -87,7 +87,7 @@ public class BtPayCsvParser implements StatementParser {
           throw new StatementParseException(
               "row "
                   + rowNumber
-                  + " expected at least "
+                  + ": expected at least "
                   + (lastColumn + 1)
                   + " columns, found "
                   + record.size());
@@ -148,7 +148,7 @@ public class BtPayCsvParser implements StatementParser {
       throw new StatementParseException(
           "row "
               + rowNumber
-              + ": Data tranzacției must be a date (dd/MM/yyyy), found \""
+              + ": Data tranzacției must be a date (dd.MM.yyyy), found \""
               + trimmed
               + "\"",
           e);
