@@ -28,6 +28,16 @@ function App() {
           >
             Transactions
           </NavLink>
+          <NavLink
+            to="/import"
+            className={({ isActive }) =>
+              isActive
+                ? "font-bold text-blue-600"
+                : "text-gray-600 hover:text-blue-600"
+            }
+          >
+            Import
+          </NavLink>
         </nav>
 
         {/* page content */}

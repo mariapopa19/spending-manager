@@ -185,9 +185,10 @@ export const TransactionsPage = () => {
               <td className="py-2">
                 {transaction.categoryName ? (
                   <span
-                    className="inline-block rounded-full px-3 py-1 text-sm font-medium text-white"
+                    className="inline-block rounded-full px-3 py-1 text-sm font-medium"
                     style={{
                       backgroundColor: transaction.categoryColor ?? "#999",
+                      color: textColorFor(transaction.categoryColor ?? "#999"),
                     }}
                   >
                     {transaction.categoryName}
