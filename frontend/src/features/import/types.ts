@@ -40,3 +40,11 @@ export const IMPORT_SOURCES = [
   { value: "BT_PAY",     label: "BT Pay",     accept: ".csv"  },
   { value: "BCR_GEORGE", label: "BCR George", accept: ".csv"  },
 ] as const satisfies ReadonlyArray<{ value: Source; label: string; accept: string }>;
+
+export type Wizard =
+  | { step: "upload" }
+  | { step: "review"; preview: ImportPreviewResponse }
+  | { step: "done"; result: ImportResultResponse };
+
+export type WizardStep = Wizard["step"];
+
