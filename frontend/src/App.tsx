@@ -1,52 +1,20 @@
-import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
-import { CategoriesPage } from "./categories/CategoriesPage";
-import { TransactionsPage } from "./transactions/TransactionsPage";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { CategoriesPage } from "./features/categories/CategoriesPage";
+import { TransactionsPage } from "./features/transactions/TransactionsPage";
+import { AppLayout } from "./components/AppLayout";
+import { ImportPage } from "./features/import/ImportPage";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen">
-        {/* navigation bar */}
-        <nav className="flex gap-4 border-b px-6 py-3 bg-gray-50">
-          <NavLink
-            to="/categories"
-            className={({ isActive }) =>
-              isActive
-                ? "font-bold text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }
-          >
-            Categories
-          </NavLink>
-          <NavLink
-            to="/transactions"
-            className={({ isActive }) =>
-              isActive
-                ? "font-bold text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }
-          >
-            Transactions
-          </NavLink>
-          <NavLink
-            to="/import"
-            className={({ isActive }) =>
-              isActive
-                ? "font-bold text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }
-          >
-            Import
-          </NavLink>
-        </nav>
-
-        {/* page content */}
-        <Routes>
-          <Route path="/" element={<CategoriesPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Navigate to="/transactions" replace />} />
           <Route path="/transactions" element={<TransactionsPage />} />
-        </Routes>
-      </div>
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/import" element={<ImportPage />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }

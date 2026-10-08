@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/apiClient";
-import type { Category } from "../types/domain";
-import type { UpdateArgs } from "../lib/api.types";
+import { api } from "../../lib/apiClient";
+import type { Category } from "../../types/domain";
+import type { UpdateArgs } from "../../lib/api.types";
 
 export type CategoryInput = {
   name: string;
@@ -29,7 +29,7 @@ export const useCreateCategory = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      return queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 };
@@ -43,7 +43,7 @@ export const useUpdateCategory = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      return queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 };
@@ -56,7 +56,7 @@ export const useDeleteCategory = () => {
       await api.delete(`/categories/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      return queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 };

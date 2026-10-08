@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Page, Source, Transaction } from "../types/domain";
-import { api } from "../lib/apiClient";
-import type { UpdateArgs } from "../lib/api.types";
+import type { Page, Source, Transaction } from "../../types/domain";
+import { api } from "../../lib/apiClient";
+import type { UpdateArgs } from "../../lib/api.types";
 
 export type TransactionInput = {
   date: string;
@@ -34,7 +34,7 @@ export const useCreateTransaction = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -47,7 +47,7 @@ export const useUpdateTransaction = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -59,7 +59,7 @@ export const useDeleteTransaction = () => {
       await api.delete(`/transactions/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };

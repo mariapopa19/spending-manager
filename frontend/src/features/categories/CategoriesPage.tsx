@@ -60,7 +60,11 @@ export const CategoriesPage = () => {
   const isSubmitting = isEditing
     ? updateCategory.isPending
     : createCategory.isPending;
-  const submitLabel = isSubmitting ? "..." : isEditing ? "Save" : "Add";
+  const getSubmitLabel = () => {
+    if(isSubmitting) return "...";
+    if(isEditing) return "Save";
+    return "Add";
+  };
 
   if (isLoading) return <p className="p-4">Loading...</p>;
   if (isError)
@@ -96,7 +100,7 @@ export const CategoriesPage = () => {
           onClick={handleAdd}
           disabled={isSubmitting}
         >
-          {submitLabel}
+          {getSubmitLabel()}
         </button>
         {editId !== null && (
           <button

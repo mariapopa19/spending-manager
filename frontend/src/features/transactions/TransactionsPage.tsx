@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useCategories } from "../categories/api";
 import { usePersons } from "../persons/api";
-import type { Transaction } from "../types/domain";
+import type { Transaction } from "../../types/domain";
 import {
   useCreateTransaction,
   useDeleteTransaction,
@@ -9,7 +9,7 @@ import {
   useUpdateTransaction,
   type TransactionInput,
 } from "./api";
-import { textColorFor } from "../lib/contrast";
+import { textColorFor } from "../../lib/contrast";
 
 export const TransactionsPage = () => {
   const [page, setPage] = useState(0);
@@ -84,7 +84,11 @@ export const TransactionsPage = () => {
   const isSubmitting = isEditing
     ? updateTransaction.isPending
     : createTransaction.isPending;
-  const submitLabel = isSubmitting ? "..." : isEditing ? "Save" : "Add";
+  const getSubmitLabel = () => {
+    if(isSubmitting) return "...";
+    if(isEditing) return "Save";
+    return "Add";
+  };
 
   if (isLoading) return <p className="p-4">Loading...</p>;
   if (isError)
@@ -152,7 +156,7 @@ export const TransactionsPage = () => {
           onClick={handleAdd}
           disabled={isSubmitting}
         >
-          {submitLabel}
+          {getSubmitLabel()}
         </button>
         {editId !== null && (
           <button
