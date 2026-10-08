@@ -1,8 +1,12 @@
 import { useState } from "react";
 import type { Source } from "../../types/domain";
-import type { ImportPreviewResponse, ImportResultResponse, Wizard } from "./types";
+import type { Wizard } from "./types";
 import { usePersons } from "../persons/api";
 import { useConfirmImport, usePreviewImport } from "./api";
+import { StepRail } from "./StepRail";
+import { UploadStep } from "./UploadStep";
+import { PreviewTable } from "./PreviewTable";
+import { DoneStep } from "./DoneStep";
 
 export const ImportPage = () => {
   const [source, setSource] = useState<Source | "">("");
@@ -45,6 +49,11 @@ export const ImportPage = () => {
       return next;
     });
 
+  const handleSource = (s: Source | "") => {
+    setSource(s);
+    setFile(null);
+  };
+
   const handleConfirm = () => {
     if (wizard.step !== "review") return;
     if (source === "" || personId === "") return;
@@ -74,8 +83,37 @@ export const ImportPage = () => {
   };
 
   return (
-  <div className="mx-auto max-w-5xl p-6">
-    <h1 className="mb-4 text-2xl font-bold">Import a statement</h1>
-    <StepRail
-  </div>);
+    <div className="mx-auto max-w-5xl p-6">
+      <h1 className="mb-4 text-2xl font-bold">Import a statement</h1>
+      <StepRail step={wizard.step} />
+      {wizard.step === "upload" && (
+        <UploadStep
+          source={source}
+          onSource={handleSource}
+          personId={personId}
+          onPersonId={setPersonId}
+          persons={persons ?? []}
+          file={file}
+          onFile={setFile}
+          onPreview={handlePreview}
+          isPending={preview.isPending}
+          error={preview.error}
+        />
+      )}
+      {wizard.step === "review" && (
+        <PreviewTable
+          preview={wizard.preview}
+          selected={selected}
+          onToggle={toggle}
+          onConfirm={handleConfirm}
+          onBack={reset}
+          isPending={confirm.isPending}
+          error={confirm.error}
+        />
+      )}
+      {wizard.step === "done" && (
+        <DoneStep result={wizard.result} onAgain={reset} />
+      )}
+    </div>
+  );
 };

@@ -10,7 +10,7 @@ const labels: Record<ImportStatus, string> = {
   DUPLICATE: "aleady imported",
 };
 
-export const StatusPhill = ({ status }: { status: ImportStatus }) => (
+export const StatusPill = ({ status }: { status: ImportStatus }) => (
   <span
     className={`inline-block rounded border px-2 py-0.5 text-xs font-medium uppercase tracking-wide ${styles[status]}`}
   >
