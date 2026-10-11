@@ -23,11 +23,9 @@ public class TransactionController {
     }
 
     @GetMapping
-    public Page<TransactionResponse> findAll(
-            @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC)
-            Pageable pageable) {
+    public Page<TransactionResponse> findAll(@PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(defaultValue = "false") boolean uncategorized) {
 
-        return transactionService.findAll(pageable);
+        return transactionService.findAll(pageable, uncategorized);
     }
 
     @GetMapping("/{id}")
@@ -38,9 +36,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionResponse> create(@Valid @RequestBody TransactionRequest request) {
         TransactionResponse created = transactionService.create(request);
-        return ResponseEntity
-                .created(URI.create("/api/transactions/" + created.id()))
-                .body(created);
+        return ResponseEntity.created(URI.create("/api/transactions/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")
@@ -52,5 +48,15 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         transactionService.delete(id);
+    }
+
+    @PostMapping("/apply-rules")
+    public int applyCategoryRules(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return transactionService.applyToUncategorized(pageable);
+    }
+
+    @PatchMapping("/{id}/category")
+    public TransactionResponse setCategory(@PathVariable Long id, @Valid @RequestBody SetCategoryRequest request) {
+        return transactionService.setCategory(id, request);
     }
 }

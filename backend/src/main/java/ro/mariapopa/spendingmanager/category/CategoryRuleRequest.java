@@ -5,4 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CategoryRuleRequest(
-    @NotBlank @Size(min = 3, max = 255) String pattern, @NotNull Long categoryId) {}
+        @NotBlank @Size(min = 3, max = 255) String pattern, @NotNull Long categoryId) {
+    public CategoryRuleRequest {
+        pattern = pattern == null ? null : pattern.strip();
+    }
+}

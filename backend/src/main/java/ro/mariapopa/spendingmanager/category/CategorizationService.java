@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class CategorizationService {
   private final CategoryRuleRepository ruleRepository;
 
@@ -24,6 +23,8 @@ public class CategorizationService {
   }
 
   static Optional<Category> match(List<CategoryRule> rules, String description) {
+    if(description == null) return Optional.empty();
+
     String haystack = description.toLowerCase(Locale.ROOT);
     return rules.stream()
         .filter(rule -> haystack.contains(rule.getPattern().trim().toLowerCase(Locale.ROOT)))

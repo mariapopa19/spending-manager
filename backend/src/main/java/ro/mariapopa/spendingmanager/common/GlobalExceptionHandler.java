@@ -50,4 +50,11 @@ public class GlobalExceptionHandler {
         new ApiError(Instant.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
+
+  @ExceptionHandler(DuplicateResourceException.class)
+  public ResponseEntity<ApiError> handleDuplicate(DuplicateResourceException ex) {
+    ApiError error =
+            new ApiError(Instant.now(), HttpStatus.CONFLICT.value(), ex.getMessage(), null);
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
 }

@@ -4,4 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ImportPreviewRow(
-    LocalDate date, BigDecimal amount, String currency, String description, ImportStatus status) {}
+        LocalDate date, BigDecimal amount, String currency, String description, ImportStatus status, Long categoryId,
+        String categoryName, String categoryColor) {
+}

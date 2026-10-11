@@ -4,11 +4,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.mariapopa.spendingmanager.category.CategorizationService;
 import ro.mariapopa.spendingmanager.category.Category;
 import ro.mariapopa.spendingmanager.category.CategoryRepository;
 import ro.mariapopa.spendingmanager.common.ResourceNotFoundException;
 import ro.mariapopa.spendingmanager.person.Person;
 import ro.mariapopa.spendingmanager.person.PersonRepository;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -16,17 +19,23 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
     private final PersonRepository personRepository;
+    private final CategorizationService categorizationService;
 
-    public TransactionService(TransactionRepository transactionRepository, CategoryRepository categoryRepository, PersonRepository personRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CategoryRepository categoryRepository, PersonRepository personRepository, CategorizationService categorizationService) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
         this.personRepository = personRepository;
+        this.categorizationService = categorizationService;
     }
 
     @Transactional(readOnly = true)
-    public Page<TransactionResponse> findAll(Pageable pageable) {
-        return transactionRepository.findAll(pageable)
-                .map(this::toResponse);
+    public Page<TransactionResponse> findAll(Pageable pageable, boolean uncategorized) {
+        if (uncategorized) {
+            return transactionRepository.findByCategoryIsNull(pageable).map(this::toResponse);
+        } else {
+            return transactionRepository.findAll(pageable)
+                    .map(this::toResponse);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -56,6 +65,20 @@ public class TransactionService {
             throw new ResourceNotFoundException("Transaction", id);
         }
         transactionRepository.deleteById(id);
+    }
+
+    @Transactional
+    public int applyToUncategorized(Pageable pageable) {
+        var match = categorizationService.matcher();
+        int updated = 0;
+        for (Transaction t : transactionRepository.findByCategoryIsNull(pageable)) {
+            Optional<Category> category = match.apply(t.getDescription());
+            if (category.isPresent()) {
+                t.setCategory(category.get());  // dirty checking saves it, no explicit save
+                updated++;
+            }
+        }
+        return updated;
     }
 
     private void applyRequest(Transaction transaction, TransactionRequest transactionRequest) {
