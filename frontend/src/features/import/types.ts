@@ -8,6 +8,9 @@ export type ImportPreviewRow = {
   currency: string;
   description: string;
   status: ImportStatus;
+  categoryId: number | null;
+  categoryName: string | null;
+  categoryColor: string | null;
 };
 
 export type ImportPreviewResponse = {
@@ -22,6 +25,7 @@ export type ImportRowRequest = {
   amount: number;
   currency: string;
   description: string;
+  categoryId: number | null;
 };
 
 export type ImportConfirmRequest = {
