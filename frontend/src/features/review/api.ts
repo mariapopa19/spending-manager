@@ -3,7 +3,7 @@ import { api } from "../../lib/apiClient";
 import type { UpdateArgs } from "../../lib/api.types";
 import type { Page, Transaction } from "../../types/domain";
 
-export type SetcategoryInput = {
+export type SetCategoryInput = {
   categoryId: number;
   createRule?: { pattern: string };
 };
@@ -23,16 +23,17 @@ export const useUncategorized = (page: number, size: number = 20) => {
 export const useSetCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, input }: UpdateArgs<SetcategoryInput>) => {
+    mutationFn: async ({ id, input }: UpdateArgs<SetCategoryInput>) => {
       const response = await api.patch<Transaction>(
         `/transactions/${id}/category`,
         input,
       );
       return response.data;
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      await queryClient.invalidateQueries({ queryKey: ["rules"] }); // a rule may have been created
-    },
+    onSuccess: async () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["rules"] }),
+      ]),
   });
 };

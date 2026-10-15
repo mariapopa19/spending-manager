@@ -69,11 +69,12 @@ export const ImportPage = () => {
     const rows = wizard.preview.rows
       .map((row, index) => ({ row, index }))
       .filter(({ index }) => selected.has(index))
-      .map(({ row }) => ({
+      .map(({ row, index }) => ({
         date: row.date,
         amount: row.amount,
         currency: row.currency,
         description: row.description,
+        categoryId: categoryIdFor(index, row),
       }));
 
     confirm.mutate(

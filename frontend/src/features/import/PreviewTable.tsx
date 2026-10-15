@@ -101,7 +101,7 @@ export const PreviewTable = ({
                         value={category.id}
                         style={{
                           backgroundColor: category.color ?? "#999",
-                          color: textColorFor(category.color ?? "#999"),
+                          color: textColorFor(category.color ?? "#999"),  
                         }}
                       >
                         {category.name}

@@ -3,6 +3,8 @@ import { CategoriesPage } from "./features/categories/CategoriesPage";
 import { TransactionsPage } from "./features/transactions/TransactionsPage";
 import { AppLayout } from "./components/AppLayout";
 import { ImportPage } from "./features/import/ImportPage";
+import { ReviewPage } from "./features/review/ReviewPage";
+import { RulesPage } from "./features/rules/RulesPage";
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/import" element={<ImportPage />} />
+          <Route path="/review" element={<ReviewPage />} />
+          <Route path="/rules" element={<RulesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
