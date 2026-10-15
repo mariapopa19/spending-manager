@@ -27,6 +27,13 @@ export type Transaction = {
   createdAt: string;
 };
 
+export type CategoryRule = {
+  id: number;
+  pattern: string;
+  categoryId: number;
+  categoryName: string;
+};
+
 export type Page<T> = {
   content: T[];
   totalElements: number;
