@@ -55,8 +55,8 @@ public class TransactionController {
   }
 
   @PostMapping("/apply-rules")
-  public int applyCategoryRules() {
-    return transactionService.applyToUncategorized();
+  public ApplyRulesResponse applyCategoryRules() {
+    return new ApplyRulesResponse(transactionService.applyToUncategorized());
   }
 
   @PatchMapping("/{id}/category")

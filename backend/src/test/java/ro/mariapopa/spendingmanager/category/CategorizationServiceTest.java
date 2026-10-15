@@ -34,8 +34,7 @@ class CategorizationServiceTest {
 
   @Test
   void matchReturnsEmptyWhenNoRuleMatches() {
-    assertThat(CategorizationService.match(List.of(rule(1, "mega", "Mâncare")), "OMV"))
-        .isEmpty();
+    assertThat(CategorizationService.match(List.of(rule(1, "mega", "Mâncare")), "OMV")).isEmpty();
   }
 
   @Test
@@ -56,13 +55,42 @@ class CategorizationServiceTest {
 
   @Test
   void matchReturnsEmptyWhenRuleListIsEmpty() {
-    assertThat(CategorizationService.match(List.of(), "OMV"))
-        .isEmpty();
+    assertThat(CategorizationService.match(List.of(), "OMV")).isEmpty();
   }
 
   @Test
   void matchReturnsEmptyWhenDescriptionIsNull() {
-    assertThat(CategorizationService.match(List.of(rule(1, "mega", "Mâncare")), null))
-        .isEmpty();
+    assertThat(CategorizationService.match(List.of(rule(1, "mega", "Mâncare")), null)).isEmpty();
+  }
+
+  @Test
+  void matchReturnsCategoryWhenPatternHasDiacriticsAndDescriptionDoesNot() {
+    var rules = List.of(rule(1, "plată", "Facturi"));
+    assertThat(CategorizationService.match(rules, "PLATA FACTURA ENEL"))
+        .map(Category::getName)
+        .hasValue("Facturi");
+  }
+
+  @Test
+  void matchReturnsCategoryWhenDescriptionHasDiacriticsAndPatternDoesNot() {
+    var rules = List.of(rule(1, "plata", "Facturi"));
+    assertThat(CategorizationService.match(rules, "Plată factură Enel"))
+        .map(Category::getName)
+        .hasValue("Facturi");
+  }
+
+  @Test
+  void matchReturnsCategoryWhenCommaBelowAndCedillaSpellingsDiffer() {
+    // rule uses ș (U+0219, comma below), description uses Ş (U+015E, cedilla)
+    var rules = List.of(rule(1, "școala", "Cadouri"));
+    assertThat(CategorizationService.match(rules, "TAXA ŞCOALA"))
+        .map(Category::getName)
+        .hasValue("Cadouri");
+  }
+
+  @Test
+  void matchReturnsEmptyWhenExportReplacedDiacriticWithQuestionMark() {
+    var rules = List.of(rule(1, "plata", "Facturi"));
+    assertThat(CategorizationService.match(rules, "PLAT? FACTURA")).isEmpty();
   }
 }
