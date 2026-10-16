@@ -1,6 +1,6 @@
 import { Button } from "../../components/ui/Button";
 import { StatusPill } from "../../components/ui/StatusPill";
-import { textColorFor } from "../../lib/contrast";
+import { textColorFor, tintStyle } from "../../lib/contrast";
 import { formatMoney } from "../../lib/money";
 import type { Category } from "../../types/domain";
 import type { ImportPreviewResponse, ImportPreviewRow } from "./types";
@@ -58,9 +58,7 @@ export const PreviewTable = ({
             return (
               <tr
                 key={index}
-                className={
-                  row.status === "DUPLICATE" ? "bg-gray-50 text-gray-500" : ""
-                }
+                className={`hover:bg-gray-50 ${row.status === "DUPLICATE" ? "bg-gray-50 text-gray-500" : ""}`}
               >
                 <td className="px-3 py-2">
                   <input
@@ -78,13 +76,9 @@ export const PreviewTable = ({
                 <td className="px-3 py-2">
                   <StatusPill status={row.status} />
                 </td>
-                <td>
-                  <span
-                    className="mr-2 inline-block h-3 w-3 rounded-full align-middle"
-                    style={{ backgroundColor: current?.color ?? "transparent" }}
-                  />
+                <td className="px-3 py-2">
                   <select
-                    className="border rounded px-3 py-2"
+                    className="rounded-full border py-1.5 pl-4 pr-8 text-sm font-medium"
                     value={categoryIdFor(index, row) ?? ""}
                     onChange={(e) =>
                       onCategoryChange(
@@ -93,6 +87,7 @@ export const PreviewTable = ({
                       )
                     }
                     disabled={row.status === "DUPLICATE"}
+                    style={tintStyle(current?.color)}
                   >
                     <option value="">No category</option>
                     {categories.map((category) => (
@@ -101,7 +96,7 @@ export const PreviewTable = ({
                         value={category.id}
                         style={{
                           backgroundColor: category.color ?? "#999",
-                          color: textColorFor(category.color ?? "#999"),  
+                          color: textColorFor(category.color ?? "#999"),
                         }}
                       >
                         {category.name}

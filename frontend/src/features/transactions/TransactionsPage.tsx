@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useCategories } from "../categories/api";
 import { usePersons } from "../persons/api";
 import type { Transaction } from "../../types/domain";
@@ -9,7 +9,10 @@ import {
   useUpdateTransaction,
   type TransactionInput,
 } from "./api";
-import { textColorFor } from "../../lib/contrast";
+import { textColorFor, tintStyle } from "../../lib/contrast";
+import { Button } from "../../components/ui/Button";
+import { formatMoney } from "../../lib/money";
+import { CategoryBadge } from "../../components/ui/CategoryBadge";
 
 export const TransactionsPage = () => {
   const [page, setPage] = useState(0);
@@ -27,6 +30,7 @@ export const TransactionsPage = () => {
   const [categoryId, setCategoryId] = useState<string>("");
   const [personId, setPersonId] = useState<string>("");
   const [editId, setEditId] = useState<number | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const resetForm = () => {
     setEditId(null);
@@ -80,162 +84,212 @@ export const TransactionsPage = () => {
     }
   };
 
+  const startEdit = (transaction: Transaction) => {
+    setEditId(transaction.id);
+    setDate(transaction.date);
+    setAmount(transaction.amount?.toString() ?? "");
+    setDescription(transaction.description);
+    setCategoryId(transaction.categoryId?.toString() ?? "");
+    setPersonId(transaction.personId?.toString() ?? "");
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   const isEditing = editId !== null;
+  const formError = isEditing ? updateTransaction.error : createTransaction.error;
   const isSubmitting = isEditing
     ? updateTransaction.isPending
     : createTransaction.isPending;
   const getSubmitLabel = () => {
-    if(isSubmitting) return "...";
-    if(isEditing) return "Save";
+    if (isSubmitting) return "...";
+    if (isEditing) return "Save";
     return "Add";
   };
+  const current = categories?.find((c) => String(c.id) === categoryId);
 
-  if (isLoading) return <p className="p-4">Loading...</p>;
+  if (isLoading) return <p className="p-6 max-w-5xl mx-auto">Loading...</p>;
   if (isError)
-    return <p className="p-4 text-red-600">Error: {error.message}</p>;
+    return <p className="p-6 max-w-5xl mx-auto text-red-600">Error: {error.message}</p>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Transactions</h1>
 
-      {/* Add form */}
-      <div className="flex flex-wrap gap-2 mb-6 items-end">
-        <input
-          type="date"
-          className="border rounded px-3 py-2"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Amount"
-          className="border rounded px-3 py-2 w-28"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <input
-          placeholder="Description"
-          className="border rounded px-3 py-2 flex-1 min-w-40"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <select
-          className="border rounded px-3 py-2"
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-        >
-          <option value="">No category</option>
-          {categories?.map((category) => (
-            <option
-              key={category.id}
-              value={category.id}
-              style={{
-                backgroundColor: category.color ?? "#999",
-                color: textColorFor(category.color ?? "#999"),
-              }}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border rounded px-3 py-2"
-          value={personId}
-          onChange={(e) => setPersonId(e.target.value)}
-        >
-          <option value="">Person...</option>
-          {persons?.map((person) => (
-            <option key={person.id} value={person.id}>
-              {person.name}
-            </option>
-          ))}
-        </select>
-        <button
-          className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 disabled:opacity-50"
-          onClick={handleAdd}
-          disabled={isSubmitting}
-        >
-          {getSubmitLabel()}
-        </button>
-        {editId !== null && (
-          <button
-            className="bg-gray-200 text-black rounded px-4 py-2 disabled:opacity-50"
-            onClick={resetForm}
+      {/* Add / edit form */}
+      <form
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAdd();
+        }}
+        className={`mb-6 rounded-lg border p-4 ${
+          isEditing ? "border-blue-300 bg-blue-50" : "bg-white"
+        }`}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-gray-700">
+            {isEditing ? "Editing transaction" : "Add a transaction"}
+          </h2>
+          {isEditing && (
+            <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+              Edit mode
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-end gap-3">
+          <input
+            type="date"
+            className="border rounded px-3 py-2"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <input
+            type="number"
+            step="0.01"
+            placeholder="Amount"
+            className="border rounded px-3 py-2 w-28"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <input
+            placeholder="Description"
+            className="border rounded px-3 py-2 flex-1 min-w-40"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <select
+            className="rounded-full border py-2 pl-4 pr-8 text-sm font-medium"
+            style={tintStyle(current?.color)}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
           >
-            Cancel
-          </button>
-        )}
-      </div>
+            <option value="">No category</option>
+            {categories?.map((category) => (
+              <option
+                key={category.id}
+                value={category.id}
+                style={{
+                  backgroundColor: category.color ?? "#999",
+                  color: textColorFor(category.color ?? "#999"),
+                }}
+              >
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border rounded px-3 py-2"
+            value={personId}
+            onChange={(e) => setPersonId(e.target.value)}
+          >
+            <option value="">Person...</option>
+            {persons?.map((person) => (
+              <option key={person.id} value={person.id}>
+                {person.name}
+              </option>
+            ))}
+          </select>
+          <Button type="submit" disabled={isSubmitting}>
+            {getSubmitLabel()}
+          </Button>
+          {isEditing && (
+            <Button variant="ghost" onClick={resetForm}>
+              Cancel
+            </Button>
+          )}
+        </div>
+      </form>
+
+      {formError && (
+        <p
+          role="alert"
+          className=" mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          {formError.message}
+        </p>
+      )}
+
+      {deleteTransaction.error && (
+        <p
+          role="alert"
+          className="mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          {deleteTransaction.error.message}
+        </p>
+      )}
 
       {/* Table */}
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b text-left text-sm text-gray-500">
-            <th className="py-2">Date</th>
-            <th className="py-2">Description</th>
-            <th className="py-2">Category</th>
-            <th className="py-2">Person</th>
-            <th className="py-2 text-right">Amount</th>
-            <th className="py-2 w-16"></th>
-            <th className="py-2 w-16"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {pageData?.content.map((transaction: Transaction) => (
-            <tr key={transaction.id} className="border-b">
-              <td className="py-2">{transaction.date}</td>
-              <td className="py-2">{transaction.description}</td>
-              <td className="py-2">
-                {transaction.categoryName ? (
-                  <span
-                    className="inline-block rounded-full px-3 py-1 text-sm font-medium"
-                    style={{
-                      backgroundColor: transaction.categoryColor ?? "#999",
-                      color: textColorFor(transaction.categoryColor ?? "#999"),
-                    }}
-                  >
-                    {transaction.categoryName}
-                  </span>
-                ) : (
-                  <span className="text-gray-400 text-sm">Needs review</span>
-                )}
-              </td>
-              <td className="py-2">{transaction.personName}</td>
-              <td
-                className={`py-2 text-right font-medium ${transaction.amount < 0 ? "text-red-600" : "text-green-600"}`}
-              >
-                {transaction.amount.toFixed(2)} {transaction.currency}
-              </td>
-              <td className="py-2 text-right">
-                <button
-                  className="text-red-600 hover:underline disabled:opacity-50"
-                  onClick={() => deleteTransaction.mutate(transaction.id)}
-                  disabled={deleteTransaction.isPending}
-                >
-                  Delete
-                </button>
-              </td>
-              <td className="py-2 text-right">
-                {" "}
-                <button
-                  className="text-blue-600 hover:underline disabled:opacity-50"
-                  onClick={() => {
-                    setEditId(transaction.id);
-                    setDate(transaction.date);
-                    setAmount(transaction.amount?.toString() ?? "");
-                    setDescription(transaction.description);
-                    setCategoryId(transaction.categoryId?.toString() ?? "");
-                    setPersonId(transaction.personId?.toString());
-                  }}
-                >
-                  Edit
-                </button>
-              </td>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+            <tr>
+              <th className="px-3 py-2">Date</th>
+              <th className="px-3 py-2">Description</th>
+              <th className="px-3 py-2">Category</th>
+              <th className="px-3 py-2">Person</th>
+              <th className="px-3 py-2 text-right">Amount</th>
+              <th className="px-3 py-2" />
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y">
+            {pageData?.content.map((transaction: Transaction) => (
+              <tr
+                key={transaction.id}
+                className={
+                  editId === transaction.id ? "bg-blue-50" : "hover:bg-gray-50"
+                }
+              >
+                <td className="whitespace-nowrap px-3 py-2 text-gray-500">
+                  {transaction.date}
+                </td>
+                <td className="px-3 py-2">{transaction.description}</td>
+                <td className="px-3 py-2">
+                  {transaction.categoryName ? (
+                    <CategoryBadge
+                      name={transaction.categoryName}
+                      color={transaction.categoryColor}
+                    />
+                  ) : (
+                    <span className="text-xs text-gray-400">Needs review</span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2">
+                  {transaction.personName}
+                </td>
+                <td
+                  className={`whitespace-nowrap px-3 py-2 text-right font-mono font-medium ${
+                    transaction.amount < 0 ? "text-red-600" : "text-green-700"
+                  }`}
+                >
+                  {formatMoney(transaction.amount, transaction.currency)}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      onClick={() => startEdit(transaction)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        if (window.confirm("Delete this transaction?")) {
+                          if (editId === transaction.id) resetForm();
+                          deleteTransaction.mutate(transaction.id);
+                        }
+                      }}
+                      disabled={deleteTransaction.isPending}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
@@ -244,20 +298,20 @@ export const TransactionsPage = () => {
           {pageData?.totalPages ?? 0} · {pageData?.totalElements ?? 0} total
         </span>
         <div className="flex gap-2">
-          <button
-            className="border rounded px-3 py-1 disabled:opacity-50"
+          <Button
+            variant="ghost"
             onClick={() => setPage((p) => p - 1)}
             disabled={pageData?.first ?? true}
           >
             Previous
-          </button>
-          <button
-            className="border rounded px-3 py-1 disabled:opacity-50"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => setPage((p) => p + 1)}
             disabled={pageData?.last ?? true}
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </div>

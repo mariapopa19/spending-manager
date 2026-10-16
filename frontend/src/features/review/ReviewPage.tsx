@@ -20,31 +20,17 @@ export const ReviewPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
       <h1 className="text-xl font-semibold">Needs review</h1>
-      <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
-            <tr>
-              <th className="px-3 py-2">Date</th>
-              <th className="px-3 py-2">Description</th>
-              <th className="px-3 py-2 text-right">Amount</th>
-              <th className="px-3 py-2">Category</th>
-              <th className="px-3 py-2">Rule</th>
-              <th className="px-3 py-2" />
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {pageData.content.map((transaction) => (
-              <ReviewRow
-                key={transaction.id}
-                transaction={transaction}
-                categories={categories}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ul className="flex flex-col gap-3">
+        {pageData.content.map((transaction) => (
+          <ReviewRow
+            key={transaction.id}
+            transaction={transaction}
+            categories={categories}
+          />
+        ))}
+      </ul>
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-500">
