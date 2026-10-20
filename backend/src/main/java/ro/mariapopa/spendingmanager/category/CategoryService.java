@@ -1,10 +1,9 @@
 package ro.mariapopa.spendingmanager.category;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mariapopa.spendingmanager.common.ResourceNotFoundException;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -17,15 +16,13 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll() {
-        return categoryRepository.findAll().stream()
-                .map(this::toResponse)
-                .toList();
+        return categoryRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
     public CategoryResponse findById(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        Category category =
+                categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", id));
         return toResponse(category);
     }
 
@@ -39,7 +36,8 @@ public class CategoryService {
     }
 
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        Category category =
+                categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", id));
         category.setName(categoryRequest.name().trim());
         category.setColor(categoryRequest.color());
         category.setMonthlyBudget(categoryRequest.monthlyBudget());
@@ -47,7 +45,7 @@ public class CategoryService {
     }
 
     public void delete(Long id) {
-        if(!categoryRepository.existsById(id)) {
+        if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Category", id);
         }
         categoryRepository.deleteById(id);
@@ -58,7 +56,7 @@ public class CategoryService {
                 category.getId(),
                 category.getName(),
                 category.getColor(),
-                category.getMonthlyBudget()
-        );
+                category.getMonthlyBudget(),
+                category.isExcludedFromBudget());
     }
 }

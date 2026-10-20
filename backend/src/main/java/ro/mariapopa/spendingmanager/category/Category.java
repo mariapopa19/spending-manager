@@ -1,7 +1,6 @@
 package ro.mariapopa.spendingmanager.category;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -20,8 +19,10 @@ public class Category {
     @Column(name = "monthly_budget", precision = 12, scale = 2)
     private BigDecimal monthlyBudget;
 
-    public Category() {
-    }
+    @Column(name = "excluded_from_budget", nullable = false)
+    private boolean excludedFromBudget;
+
+    public Category() {}
 
     public Long getId() {
         return id;
@@ -55,13 +56,20 @@ public class Category {
         this.monthlyBudget = monthlyBudget;
     }
 
+    public boolean isExcludedFromBudget() {
+        return excludedFromBudget;
+    }
+
+    public void setExcludedFromBudget(boolean excludedFromBudget) {
+        this.excludedFromBudget = excludedFromBudget;
+    }
+
     @Override
     public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", monthlyBudget=" + monthlyBudget +
-                '}';
+        return "Category{" + "id="
+                + id + ", name='"
+                + name + '\'' + ", color='"
+                + color + '\'' + ", monthlyBudget="
+                + monthlyBudget + '}';
     }
 }
