@@ -1,14 +1,14 @@
 package ro.mariapopa.spendingmanager.stats;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,10 +57,18 @@ public class StatsService {
                 repository.countUncategorizedExpenses(from, to, filter.currency(), filter.personId(), filter.source()));
     }
 
-    //TODO
-    public MonthlyTotalResponse monthly(YearMonth month, StatsFilter filter) {return null;}
+    public List<MonthlyTotalResponse> monthly(YearMonth from, YearMonth to, StatsFilter filter) {
+        LocalDate fromDate = from.atDay(1);
+        LocalDate toExclusive = to.plusMonths(1).atDay(1); // includes the whole `to` month
 
-    //TODO
-    public MerchantTotalResponse topMerchants(YearMonth month, StatsFilter filter) {return null;}
+        return repository.monthly(fromDate, toExclusive, filter.currency(), filter.personId(), filter.source());
+    }
 
+    public List<MerchantTotalResponse> topMerchants(YearMonth month, int limit, StatsFilter filter) {
+        LocalDate from = month.atDay(1);
+        LocalDate to = month.plusMonths(1).atDay(1);
+
+        return repository.topMerchants(
+                from, to, filter.currency(), filter.personId(), filter.source(), PageRequest.of(0, limit));
+    }
 }
