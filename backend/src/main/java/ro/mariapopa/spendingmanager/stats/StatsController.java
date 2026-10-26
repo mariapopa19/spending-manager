@@ -1,6 +1,8 @@
 package ro.mariapopa.spendingmanager.stats;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
 import java.time.YearMonth;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,7 +53,7 @@ public class StatsController {
     @GetMapping("/merchants")
     public List<MerchantTotalResponse> topMerchants(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month,
-            @RequestParam(defaultValue = "10") int limit,
+            @Positive @Max(50) @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "RON") String currency,
             @RequestParam(required = false) Long personId,
             @RequestParam(required = false) Source source) {

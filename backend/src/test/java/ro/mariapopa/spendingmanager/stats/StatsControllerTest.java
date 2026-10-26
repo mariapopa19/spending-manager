@@ -14,16 +14,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import ro.mariapopa.spendingmanager.TestcontainersConfiguration;
 import ro.mariapopa.spendingmanager.category.CategoryResponse;
+import ro.mariapopa.spendingmanager.common.ApiError;
 import ro.mariapopa.spendingmanager.transaction.Source;
 import ro.mariapopa.spendingmanager.transaction.TransactionRequest;
 import ro.mariapopa.spendingmanager.transaction.TransactionResponse;
 
 @SpringBootTest
 @AutoConfigureRestTestClient
+@Import(TestcontainersConfiguration.class)
 public class StatsControllerTest {
     @Autowired
     RestTestClient restTestClient;
@@ -90,20 +94,53 @@ public class StatsControllerTest {
                 "/categories?month=2001-13", // invalid month number
                 "/categories?month=abc", // not a date at all
                 "/monthly?from=2001-01", // missing `to`
-                "/merchants?month=2001-01&limit=x" // non-numeric limit
+                "/merchants?month=2001-01&limit=x", // non-numeric limit
+                "/merchants?month=2001-01&limit=0"
             })
     void whenMonthIsMissingOrMalformed_thenReturn400(String path) {
         restTestClient.get().uri(BASE_URI + path).exchange().expectStatus().isBadRequest();
     }
 
     @Test
-    void whenCategoryHasNoTransactions_thenItStillAppearsWithZeroActual() {}
+    void whenLimitIsNotPositive_thenReturn400WithLimitFieldError() {
+        ApiError error = restTestClient
+                .get()
+                .uri(BASE_URI + "/merchants?month=2001-01&limit=0")
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody(ApiError.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(error).isNotNull();
+        assertThat(error.message()).isEqualTo("Validation failed");
+        assertThat(error.fieldErrors()).containsKey("limit");
+    }
 
     @Test
-    void whenExpenseIsInEconomii_thenItIsExcludedFromCategoriesAndMonthly() {}
+    void whenCategoryHasNoTransactions_thenItStillAppearsWithZeroActual() {
+        List<CategoryTotalResponse> result = getCategories("month=2001-02");
+
+        assertThat(actualFor(result, "Medicale")).isEqualByComparingTo("0");
+        assertThat(result).extracting(CategoryTotalResponse::name).doesNotContain("Economii", "Necategorizat");
+    }
 
     @Test
-    void whenExpenseHasNoCategory_thenItAppearsAsNecategorizat() {}
+    void whenExpenseIsInEconomii_thenItIsExcludedFromCategoriesAndMonthly() {
+        create(LocalDate.of(2001, 8, 15), "-300.00", categoryId("Economii"));
+        create(LocalDate.of(2001, 8, 30), "-10.00", categoryId("Rate"));
+
+        List<CategoryTotalResponse> result = getCategories("month=2001-08");
+        assertThat(result).extracting(CategoryTotalResponse::categoryId).isNotIn("Economii");
+        assertThat(actualFor(result, "Rate")).isEqualByComparingTo("10.00");
+    }
+
+    @Test
+    void whenExpenseHasNoCategory_thenItAppearsAsNecategorizat() {
+        /* - Create one expense with categoryId = null, then check actualFor(…, "Necategorizat").
+        - Optionally also check that the row's categoryId() is null. The frontend will depend on that.*/
+    }
 
     @Test
     void whenTransactionIsOnFirstOfNextMonth_thenItIsNotCounted() {
@@ -115,10 +152,22 @@ public class StatsControllerTest {
     }
 
     @Test
-    void whenTransactionIsInEur_thenItIsNotCountedForRon() {}
+    void whenTransactionIsInEur_thenItIsNotCountedForRon() {
+        /*- Use the long create(...) overload with "EUR".
+        - Check both directions: the RON query ignores the EUR transaction, and month=…&currency=EUR counts only it. With both checks, the test proves the filter
+          works, not just that the EUR row is missing.*/
+    }
 
     @Test
-    void whenFilteringByPersonOrSource_thenOnlyMatchingTransactionsCount() {}
+    void whenFilteringByPersonOrSource_thenOnlyMatchingTransactionsCount() {
+        /* - Create three Rate expenses with different amounts (10, 20, 40):
+          - CRISTI/MANUAL
+          - MARIA/MANUAL
+          - CRISTI/REVOLUT
+        - personId=2 should give 20, source=REVOLUT should give 40, and both filters together should give 0.
+        - Use different amounts so each sum shows which rows were counted.
+        - If this test gets too long, split it into one test per filter.*/
+    }
 
     @Test
     void whenMonthlyRangeSpansTwoMonths_thenBothAreReturnedInOrderIncludingTheToMonth() {
@@ -136,10 +185,32 @@ public class StatsControllerTest {
     }
 
     @Test
-    void whenOverview_thenRemainingIsIncomeMinusExpensesWithoutEconomii() {}
+    void whenOverview_thenRemainingIsIncomeMinusExpensesWithoutEconomii() {
+        /* - In one month, create:
+          - income of +1000, uncategorized
+          - Rate -100
+          - Economii -300
+          - an uncategorized expense of -50
+        - Expect:
+          - income = 1000
+          - expenses = 150 (Economii excluded, the uncategorized expense included)
+          - remaining = 850
+          - uncategorizedCount = 1. The +1000 income has no category but must not be counted, because only expenses are.
+          - estimated = sumOfBudgets(). That's the job of the helper you already wrote.*/
+    }
 
     @Test
-    void whenTopMerchants_thenSortedByTotalDescAndLimited() {}
+    void whenTopMerchants_thenSortedByTotalDescAndLimited() {
+        /*- Create:
+          - Lidl -10 and -20 (total 30, count 2)
+          - Kaufland -50
+          - Mega -5
+        - Call with limit=2 and expect [Kaufland, Lidl] in that order, with Lidl's count = 2.
+        - Two things to watch:
+          - Use different totals. If two merchants tie, the order isn't guaranteed and the test will fail at random.
+          - Give every transaction a merchant. A null merchant falls back to the description, and all your test rows share the description "zztest stats", so
+            they'd merge into one group.*/
+    }
 
     private OverviewResponse getOverview(String query) {
         return restTestClient
