@@ -132,7 +132,8 @@ public class StatsControllerTest {
         create(LocalDate.of(2001, 8, 30), "-10.00", categoryId("Rate"));
 
         List<CategoryTotalResponse> result = getCategories("month=2001-08");
-        assertThat(result).extracting(CategoryTotalResponse::categoryId).isNotIn("Economii");
+        assertThat(result).extracting(CategoryTotalResponse::name).doesNotContain("Economii");
+        assertThat(getMonthly("from=2001-08&to=2001-08")).extracting(MonthlyTotalResponse::expenses).contains(new  BigDecimal("10.00"));
         assertThat(actualFor(result, "Rate")).isEqualByComparingTo("10.00");
     }
 
@@ -140,6 +141,11 @@ public class StatsControllerTest {
     void whenExpenseHasNoCategory_thenItAppearsAsNecategorizat() {
         /* - Create one expense with categoryId = null, then check actualFor(…, "Necategorizat").
         - Optionally also check that the row's categoryId() is null. The frontend will depend on that.*/
+        create(LocalDate.of(2001, 8, 15), "-300.00", null);
+        List<CategoryTotalResponse> result = getCategories("month=2001-08");
+
+        assertThat(actualFor(result, "Necategorizat")).isEqualByComparingTo("300.00");
+        assertThat(result).extracting(CategoryTotalResponse::categoryId).contains((Long) null);
     }
 
     @Test
@@ -156,6 +162,10 @@ public class StatsControllerTest {
         /*- Use the long create(...) overload with "EUR".
         - Check both directions: the RON query ignores the EUR transaction, and month=…&currency=EUR counts only it. With both checks, the test proves the filter
           works, not just that the EUR row is missing.*/
+        create(LocalDate.of(2001, 8, 20), "-300.00", "EUR", "Mega Image", categoryId("Lifestyle"), MARIA, Source.BT_PAY);
+        create(LocalDate.of(2001, 8, 30), "-10.00", categoryId("Lifestyle"));
+
+        assertThat(actualFor(getCategories("month=2001-08"), "Lifestyle")).isEqualByComparingTo("10.00");
     }
 
     @Test
