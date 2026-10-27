@@ -10,6 +10,9 @@ export const AppLayout = () => {
   return (
     <div className="min-h-screen">
       <nav className="flex items-center gap-4 border-b bg-gray-50 px-6 py-3">
+        <NavLink to="/dashboard" className={linkClass}>
+          Dashboard
+        </NavLink>
         <span className="mr-2 font-semibold">Spending Manager</span>
         <NavLink to="/transactions" className={linkClass}>
           Transactions

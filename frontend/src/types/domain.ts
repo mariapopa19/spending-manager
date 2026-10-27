@@ -34,6 +34,41 @@ export type CategoryRule = {
   categoryName: string;
 };
 
+export type CategoryTotal = {
+  categoryId: number | null;
+  name: string;
+  color: string | null;
+  estimated: number | null;
+  actual: number;
+};
+
+export type MerchantTotal = {
+  merchant: string;
+  total: number;
+  count: number;
+};
+export type MonthlyTotal = {
+  month: string;
+  expenses: number;
+  income: number;
+};
+
+export type Overview = {
+  month: string;
+  currency: string;
+  income: number;
+  expenses: number;
+  estimated: number;
+  remaining: number;
+  uncategorizedCount: number;
+};
+
+export type StatsFilters = {
+  month: string;
+  personId?: number;
+  source?: Source;
+};
+
 export type Page<T> = {
   content: T[];
   totalElements: number;
