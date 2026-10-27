@@ -133,7 +133,9 @@ public class StatsControllerTest {
 
         List<CategoryTotalResponse> result = getCategories("month=2001-08");
         assertThat(result).extracting(CategoryTotalResponse::name).doesNotContain("Economii");
-        assertThat(getMonthly("from=2001-08&to=2001-08")).extracting(MonthlyTotalResponse::expenses).contains(new  BigDecimal("10.00"));
+        assertThat(getMonthly("from=2001-08&to=2001-08"))
+                .extracting(MonthlyTotalResponse::expenses)
+                .contains(new BigDecimal("10.00"));
         assertThat(actualFor(result, "Rate")).isEqualByComparingTo("10.00");
     }
 
@@ -162,7 +164,14 @@ public class StatsControllerTest {
         /*- Use the long create(...) overload with "EUR".
         - Check both directions: the RON query ignores the EUR transaction, and month=…&currency=EUR counts only it. With both checks, the test proves the filter
           works, not just that the EUR row is missing.*/
-        create(LocalDate.of(2001, 8, 20), "-300.00", "EUR", "Mega Image", categoryId("Lifestyle"), MARIA, Source.BT_PAY);
+        create(
+                LocalDate.of(2001, 8, 20),
+                "-300.00",
+                "EUR",
+                "Mega Image",
+                categoryId("Lifestyle"),
+                MARIA,
+                Source.BT_PAY);
         create(LocalDate.of(2001, 8, 30), "-10.00", categoryId("Lifestyle"));
 
         assertThat(actualFor(getCategories("month=2001-08"), "Lifestyle")).isEqualByComparingTo("10.00");
@@ -170,13 +179,17 @@ public class StatsControllerTest {
 
     @Test
     void whenFilteringByPersonOrSource_thenOnlyMatchingTransactionsCount() {
-        /* - Create three Rate expenses with different amounts (10, 20, 40):
-          - CRISTI/MANUAL
-          - MARIA/MANUAL
-          - CRISTI/REVOLUT
-        - personId=2 should give 20, source=REVOLUT should give 40, and both filters together should give 0.
-        - Use different amounts so each sum shows which rows were counted.
-        - If this test gets too long, split it into one test per filter.*/
+        Long rate = categoryId("Rate");
+        create(LocalDate.of(2001, 3, 10), "-10.00", "RON", null, rate, CRISTI, Source.MANUAL);
+        create(LocalDate.of(2001, 3, 11), "-20.00", "RON", null, rate, MARIA, Source.MANUAL);
+        create(LocalDate.of(2001, 3, 12), "-40.00", "RON", null, rate, CRISTI, Source.REVOLUT);
+
+        assertThat(actualFor(getCategories("month=2001-03&personId=" + MARIA), "Rate"))
+                .isEqualByComparingTo("20.00");
+        assertThat(actualFor(getCategories("month=2001-03&source=REVOLUT"), "Rate"))
+                .isEqualByComparingTo("40.00");
+        assertThat(actualFor(getCategories("month=2001-03&personId=" + MARIA + "&source=REVOLUT"), "Rate"))
+                .isEqualByComparingTo("0");
     }
 
     @Test
@@ -196,30 +209,38 @@ public class StatsControllerTest {
 
     @Test
     void whenOverview_thenRemainingIsIncomeMinusExpensesWithoutEconomii() {
-        /* - In one month, create:
-          - income of +1000, uncategorized
-          - Rate -100
-          - Economii -300
-          - an uncategorized expense of -50
-        - Expect:
-          - income = 1000
-          - expenses = 150 (Economii excluded, the uncategorized expense included)
-          - remaining = 850
-          - uncategorizedCount = 1. The +1000 income has no category but must not be counted, because only expenses are.
-          - estimated = sumOfBudgets(). That's the job of the helper you already wrote.*/
+        create(LocalDate.of(2001, 6, 1), "1000.00", null);
+        create(LocalDate.of(2001, 6, 5), "-100.00", categoryId("Rate"));
+        create(LocalDate.of(2001, 6, 10), "-300.00", categoryId("Economii"));
+        create(LocalDate.of(2001, 6, 15), "-50.00", null);
+
+        OverviewResponse overview = getOverview("month=2001-06");
+
+        assertThat(overview).isNotNull();
+        assertThat(overview.month()).isEqualTo("2001-06");
+        assertThat(overview.currency()).isEqualTo("RON");
+        assertThat(overview.income()).isEqualByComparingTo("1000.00");
+        assertThat(overview.expenses()).isEqualByComparingTo("150.00");
+        assertThat(overview.remaining()).isEqualByComparingTo("850.00");
+        // the +1000 income has no category either, but only expenses count as uncategorized
+        assertThat(overview.uncategorizedCount()).isEqualTo(1);
+        assertThat(overview.estimated()).isEqualByComparingTo(sumOfBudgets());
     }
 
     @Test
     void whenTopMerchants_thenSortedByTotalDescAndLimited() {
-        /*- Create:
-          - Lidl -10 and -20 (total 30, count 2)
-          - Kaufland -50
-          - Mega -5
-        - Call with limit=2 and expect [Kaufland, Lidl] in that order, with Lidl's count = 2.
-        - Two things to watch:
-          - Use different totals. If two merchants tie, the order isn't guaranteed and the test will fail at random.
-          - Give every transaction a merchant. A null merchant falls back to the description, and all your test rows share the description "zztest stats", so
-            they'd merge into one group.*/
+        // distinct totals so the order is deterministic; every row has a merchant so they don't merge on description
+        create(LocalDate.of(2001, 7, 1), "-10.00", "RON", "Lidl", null, CRISTI, Source.MANUAL);
+        create(LocalDate.of(2001, 7, 2), "-20.00", "RON", "Lidl", null, CRISTI, Source.MANUAL);
+        create(LocalDate.of(2001, 7, 3), "-50.00", "RON", "Kaufland", null, CRISTI, Source.MANUAL);
+        create(LocalDate.of(2001, 7, 4), "-5.00", "RON", "Mega", null, CRISTI, Source.MANUAL);
+
+        List<MerchantTotalResponse> result = getTopMerchants("month=2001-07&limit=2");
+
+        assertThat(result).extracting(MerchantTotalResponse::merchant).containsExactly("Kaufland", "Lidl");
+        assertThat(result.get(0).total()).isEqualByComparingTo("50.00");
+        assertThat(result.get(1).total()).isEqualByComparingTo("30.00");
+        assertThat(result.get(1).count()).isEqualTo(2);
     }
 
     private OverviewResponse getOverview(String query) {
