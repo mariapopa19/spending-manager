@@ -5,6 +5,7 @@ import { AppLayout } from "./components/AppLayout";
 import { ImportPage } from "./features/import/ImportPage";
 import { ReviewPage } from "./features/review/ReviewPage";
 import { RulesPage } from "./features/rules/RulesPage";
+import { DashboardPage } from "./features/dashboard/DashboardPage";
 
 function App() {
   return (

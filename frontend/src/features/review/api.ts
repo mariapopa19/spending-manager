@@ -34,6 +34,7 @@ export const useSetCategory = () => {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["transactions"] }),
         queryClient.invalidateQueries({ queryKey: ["rules"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
       ]),
   });
 };
