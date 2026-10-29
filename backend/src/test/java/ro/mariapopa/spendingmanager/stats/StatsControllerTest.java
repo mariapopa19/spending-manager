@@ -243,6 +243,21 @@ public class StatsControllerTest {
         assertThat(result.get(1).count()).isEqualTo(2);
     }
 
+    @Test
+    void whenIncomeIsInExcludedCategory_thenItStillCountsAsIncome() {
+        create(LocalDate.of(2001, 7, 1), "5000.00", categoryId("Economii"));
+        create(LocalDate.of(2001, 7, 5), "-300.00", categoryId("Economii"));
+        create(LocalDate.of(2001, 7, 10), "-100.00", categoryId("Rate"));
+
+        OverviewResponse overview = getOverview("month=2001-07");
+        assertThat(overview.income()).isEqualByComparingTo("5000.00");
+        assertThat(overview.expenses()).isEqualByComparingTo("100.00");
+
+        MonthlyTotalResponse july = getMonthly("from=2001-07&to=2001-07").getFirst();
+        assertThat(july.income()).isEqualByComparingTo("5000.00");
+        assertThat(july.expenses()).isEqualByComparingTo("100.00");
+    }
+
     private OverviewResponse getOverview(String query) {
         return restTestClient
                 .get()

@@ -47,13 +47,12 @@ public interface StatsRepository extends Repository<Transaction, Long> {
     @Query("""
         select new ro.mariapopa.spendingmanager.stats.MonthlyTotalResponse(
             concat(cast(year(t.date) as string), '-', lpad(cast(month(t.date) as string), 2, '0')),
-            sum(case when t.amount < 0 then -t.amount else 0bd end),
+            sum(case when t.amount < 0 and (c is null or c.excludedFromBudget = false) then -t.amount else 0bd end),
             sum(case when t.amount > 0 then t.amount else 0bd end)
         )
         from Transaction t
         left join t.category c
-        where (c is null or c.excludedFromBudget = false)
-            and t.date >= :from and t.date < :to
+        where t.date >= :from and t.date < :to
             and t.currency = :currency
             and (:personId is null or t.person.id = :personId)
             and (:source is null or t.source = :source)
@@ -82,8 +81,7 @@ public interface StatsRepository extends Repository<Transaction, Long> {
 
     @Query("""
         select coalesce(sum(t.amount), 0bd) from Transaction t
-        left join t.category c
-        where t.amount > 0 and (c is null or c.excludedFromBudget = false)
+        where t.amount > 0
             and t.date >= :from and t.date < :to and t.currency = :currency
             and (:personId is null or t.person.id = :personId)
             and (:source is null or t.source = :source)
