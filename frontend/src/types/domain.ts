@@ -8,6 +8,7 @@ export type Category = {
   name: string;
   color: string | null;
   monthlyBudget: number | null;
+  excludedFromBudget: boolean;
 };
 
 export type Transaction = {
@@ -71,12 +72,12 @@ export type StatsFilters = {
 
 export type Page<T> = {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 };
 
 export type Source = "REVOLUT" | "BT_PAY" | "BCR_GEORGE" | "MANUAL";

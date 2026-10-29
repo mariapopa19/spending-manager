@@ -23,6 +23,9 @@ export const TransactionsPage = () => {
   const updateTransaction = useUpdateTransaction();
   const deleteTransaction = useDeleteTransaction();
 
+  const isFirstPage = (pageData?.page.number ?? 0) === 0;
+  const isLastPage = pageData ? pageData.page.number + 1 >= pageData.page.totalPages : true;
+
   // form state
   const [date, setDate] = useState("");
   const [amount, setAmount] = useState("");
@@ -294,21 +297,21 @@ export const TransactionsPage = () => {
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
         <span className="text-sm text-gray-500">
-          Page {pageData ? pageData.number + 1 : 0} of{" "}
-          {pageData?.totalPages ?? 0} · {pageData?.totalElements ?? 0} total
+          Page {pageData ? pageData.page.number + 1 : 0} of{" "}
+          {pageData?.page.totalPages ?? 0} · {pageData?.page.totalElements ?? 0} total
         </span>
         <div className="flex gap-2">
           <Button
             variant="ghost"
             onClick={() => setPage((p) => p - 1)}
-            disabled={pageData?.first ?? true}
+            disabled={isFirstPage ?? true}
           >
             Previous
           </Button>
           <Button
             variant="ghost"
             onClick={() => setPage((p) => p + 1)}
-            disabled={pageData?.last ?? true}
+            disabled={isLastPage ?? true}
           >
             Next
           </Button>

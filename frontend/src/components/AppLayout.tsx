@@ -6,14 +6,14 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 
 export const AppLayout = () => {
   const { data } = useUncategorized(0, 1);
-  const count = data?.totalElements ?? 0;
+  const count = data?.page.totalElements ?? 0;
   return (
     <div className="min-h-screen">
       <nav className="flex items-center gap-4 border-b bg-gray-50 px-6 py-3">
+        <span className="mr-2 font-semibold">Spending Manager</span>
         <NavLink to="/dashboard" className={linkClass}>
           Dashboard
         </NavLink>
-        <span className="mr-2 font-semibold">Spending Manager</span>
         <NavLink to="/transactions" className={linkClass}>
           Transactions
         </NavLink>
