@@ -68,31 +68,35 @@ export const RulesPage = () => {
   const isSubmitting = isEditing ? updateRule.isPending : createRule.isPending;
   const getSubmitLabel = () => {
     if (isSubmitting) return "...";
-    if (isEditing) return "Save";
-    return "Add";
+    if (isEditing) return "Salvează";
+    return "Adaugă";
   };
   const formError = isEditing ? updateRule.error : createRule.error;
   const categoryById = new Map(categories?.map((c) => [c.id, c]));
   const current = categoryById.get(Number(categoryId));
 
-  if (isLoading) return <p className="p-4">Loading...</p>;
+  if (isLoading) return <p className="mx-auto max-w-6xl p-6">Se încarcă...</p>;
   if (isError)
-    return <p className="p-4 text-red-600">Error: {error.message}</p>;
+    return (
+      <p className="mx-auto max-w-6xl p-6 text-red-600">
+        Eroare: {error.message}
+      </p>
+    );
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+    <div className="mx-auto max-w-6xl space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Rules</h1>
+          <h1 className="text-2xl font-semibold">Reguli</h1>
           <p className="text-sm text-gray-500">
-            Transactions whose description contains a pattern get its category
-            on import. Re-apply to categorize existing uncategorized ones.
+            Tranzacțiile a căror descriere conține textul primesc categoria la
+            import. Reaplică regulile ca să categorisești și tranzacțiile existente fără categorie.
           </p>
         </div>
         <div className="flex items-center gap-3">
           {apply.isSuccess && (
             <span className="text-sm text-green-700">
-              {apply.data.updated} transactions categorized
+              {apply.data.updated} tranzacții categorisite
             </span>
           )}
           <Button
@@ -100,14 +104,14 @@ export const RulesPage = () => {
             onClick={() => apply.mutate()}
             disabled={apply.isPending}
           >
-            Re-apply rules
+            Reaplică regulile
           </Button>
         </div>
       </div>
 
       {/* Add/edit form */}
       <h2 className="text-sm font-semibold text-gray-700">
-        {isEditing ? "Edit rule" : "Add a rule"}
+        {isEditing ? "Editează regula" : "Adaugă o regulă"}
       </h2>
       <form
         className={`flex flex-wrap items-end gap-3 rounded-lg border p-4 ${isEditing ? "bg-blue-50" : ""}`}
@@ -116,22 +120,22 @@ export const RulesPage = () => {
           handleAdd();
         }}
       >
-        <Field label="Pattern">
+        <Field label="Text căutat">
           <input
-            className="w-64 rounded border px-3 py-2"
-            placeholder="e.g. Netflix (min. 3 characters)"
+            className="w-64 rounded-lg border px-3 py-2 text-sm"
+            placeholder="ex. Netflix (min. 3 caractere)"
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
           />
         </Field>
-        <Field label="Category">
+        <Field label="Categorie">
           <select
-            className="w-48 rounded-full border py-2 pl-4 pr-8 text-sm font-medium"
+            className="w-48 rounded-lg border py-2 pl-3 pr-8 text-sm font-medium"
             style={tintStyle(current?.color)}
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
           >
-            <option value="">Choose...</option>
+            <option value="">Alege...</option>
             {categories?.map((category) => (
               <option
                 key={category.id}
@@ -151,7 +155,7 @@ export const RulesPage = () => {
         </Button>
         {isEditing && (
           <Button variant="ghost" onClick={resetForm}>
-            Cancel
+            Renunță
           </Button>
         )}
       </form>
@@ -180,8 +184,8 @@ export const RulesPage = () => {
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
             <tr>
-              <th className="w-1/2 px-3 py-2">Pattern</th>
-              <th className="px-3 py-2">Category</th>
+              <th className="w-1/2 px-3 py-2">Text căutat</th>
+              <th className="px-3 py-2">Categorie</th>
               <th className="px-3 py-2" />
             </tr>
           </thead>
@@ -207,19 +211,19 @@ export const RulesPage = () => {
                         setCategoryId(String(rule.categoryId));
                       }}
                     >
-                      Edit
+                      Editează
                     </Button>
                     <Button
                       variant="danger"
                       onClick={() => {
-                        if (window.confirm(`Delete rule "${rule.pattern}"?`)) {
+                        if (window.confirm(`Ștergi regula "${rule.pattern}"?`)) {
                           if (editId === rule.id) resetForm();
                           deleteRule.mutate(rule.id);
                         }
                       }}
                       disabled={deleteRule.isPending}
                     >
-                      Delete
+                      Șterge
                     </Button>
                   </div>
                 </td>
@@ -228,7 +232,7 @@ export const RulesPage = () => {
           </tbody>
         </table>
         {rules?.length === 0 && (
-          <p className="p-4 text-center text-sm text-gray-500">No rules yet.</p>
+          <p className="p-4 text-center text-sm text-gray-500">Nu există reguli încă.</p>
         )}
       </div>
     </div>

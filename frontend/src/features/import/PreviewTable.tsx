@@ -32,9 +32,9 @@ export const PreviewTable = ({
 }: Props) => (
   <div className="flex flex-col gap-4">
     <p className="text-sm text-gray-600">
-      {preview.total} rows · <strong>{preview.newCount}</strong> new ·{" "}
-      <strong>{preview.duplicateCount}</strong> already imported ·{" "}
-      <strong>{selected.size}</strong> selected
+      {preview.total} rânduri · <strong>{preview.newCount}</strong> noi ·{" "}
+      <strong>{preview.duplicateCount}</strong> deja importate ·{" "}
+      <strong>{selected.size}</strong> selectate
     </p>
 
     <div className="overflow-x-auto rounded-lg border">
@@ -42,11 +42,11 @@ export const PreviewTable = ({
         <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
           <tr>
             <th className="w-10 px-3 py-2" />
-            <th className="px-3 py-2">Date</th>
-            <th className="px-3 py-2">Description</th>
-            <th className="px-3 py-2 text-right">Amount</th>
+            <th className="px-3 py-2">Data</th>
+            <th className="px-3 py-2">Descriere</th>
+            <th className="px-3 py-2 text-right">Sumă</th>
             <th className="px-3 py-2">Status</th>
-            <th className="px-3 py-2">Category</th>
+            <th className="px-3 py-2">Categorie</th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -78,7 +78,7 @@ export const PreviewTable = ({
                 </td>
                 <td className="px-3 py-2">
                   <select
-                    className="rounded-full border py-1.5 pl-4 pr-8 text-sm font-medium"
+                    className="rounded-lg border py-1.5 pl-3 pr-8 text-sm font-medium"
                     value={categoryIdFor(index, row) ?? ""}
                     onChange={(e) =>
                       onCategoryChange(
@@ -89,7 +89,7 @@ export const PreviewTable = ({
                     disabled={row.status === "DUPLICATE"}
                     style={tintStyle(current?.color)}
                   >
-                    <option value="">No category</option>
+                    <option value="">Fără categorie</option>
                     {categories.map((category) => (
                       <option
                         key={category.id}
@@ -121,11 +121,11 @@ export const PreviewTable = ({
     )}
     <div className="flex gap-2">
       <Button variant="ghost" onClick={onBack}>
-        Back
+        Înapoi
       </Button>
       <Button onClick={onConfirm} disabled={isPending || selected.size === 0}>
-        Import {selected.size} row
-        {selected.size === 1 ? "" : "s"}
+        Importă {selected.size}{" "}
+        {selected.size === 1 ? "rând" : "rânduri"}
       </Button>
     </div>
   </div>

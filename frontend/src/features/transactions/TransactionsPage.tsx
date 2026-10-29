@@ -24,7 +24,9 @@ export const TransactionsPage = () => {
   const deleteTransaction = useDeleteTransaction();
 
   const isFirstPage = (pageData?.page.number ?? 0) === 0;
-  const isLastPage = pageData ? pageData.page.number + 1 >= pageData.page.totalPages : true;
+  const isLastPage = pageData
+    ? pageData.page.number + 1 >= pageData.page.totalPages
+    : true;
 
   // form state
   const [date, setDate] = useState("");
@@ -98,24 +100,30 @@ export const TransactionsPage = () => {
   };
 
   const isEditing = editId !== null;
-  const formError = isEditing ? updateTransaction.error : createTransaction.error;
+  const formError = isEditing
+    ? updateTransaction.error
+    : createTransaction.error;
   const isSubmitting = isEditing
     ? updateTransaction.isPending
     : createTransaction.isPending;
   const getSubmitLabel = () => {
     if (isSubmitting) return "...";
-    if (isEditing) return "Save";
-    return "Add";
+    if (isEditing) return "Salvează";
+    return "Adaugă";
   };
   const current = categories?.find((c) => String(c.id) === categoryId);
 
-  if (isLoading) return <p className="p-6 max-w-5xl mx-auto">Loading...</p>;
+  if (isLoading) return <p className="mx-auto max-w-6xl p-6">Se încarcă...</p>;
   if (isError)
-    return <p className="p-6 max-w-5xl mx-auto text-red-600">Error: {error.message}</p>;
+    return (
+      <p className="mx-auto max-w-6xl p-6 text-red-600">
+        Eroare: {error.message}
+      </p>
+    );
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Transactions</h1>
+    <div className="mx-auto max-w-6xl space-y-6 p-6">
+      <h1 className="text-2xl font-semibold">Tranzacții</h1>
 
       {/* Add / edit form */}
       <form
@@ -124,17 +132,17 @@ export const TransactionsPage = () => {
           e.preventDefault();
           handleAdd();
         }}
-        className={`mb-6 rounded-lg border p-4 ${
-          isEditing ? "border-blue-300 bg-blue-50" : "bg-white"
+        className={`rounded-lg border p-4 ${
+          isEditing ? "border-blue-300 bg-blue-50" : "border-gray-200"
         }`}
       >
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-gray-700">
-            {isEditing ? "Editing transaction" : "Add a transaction"}
+            {isEditing ? "Editezi tranzacția" : "Adaugă o tranzacție"}
           </h2>
           {isEditing && (
             <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-              Edit mode
+              Mod editare
             </span>
           )}
         </div>
@@ -142,31 +150,31 @@ export const TransactionsPage = () => {
         <div className="flex flex-wrap items-end gap-3">
           <input
             type="date"
-            className="border rounded px-3 py-2"
+            className="rounded-lg border px-3 py-2 text-sm"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
           <input
             type="number"
             step="0.01"
-            placeholder="Amount"
-            className="border rounded px-3 py-2 w-28"
+            placeholder="Sumă"
+            className="w-28 rounded-lg border px-3 py-2 text-sm"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
           <input
-            placeholder="Description"
-            className="border rounded px-3 py-2 flex-1 min-w-40"
+            placeholder="Descriere"
+            className="min-w-40 flex-1 rounded-lg border px-3 py-2 text-sm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <select
-            className="rounded-full border py-2 pl-4 pr-8 text-sm font-medium"
+            className="rounded-lg border py-2 pl-3 pr-8 text-sm font-medium"
             style={tintStyle(current?.color)}
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
           >
-            <option value="">No category</option>
+            <option value="">Fără categorie</option>
             {categories?.map((category) => (
               <option
                 key={category.id}
@@ -181,11 +189,11 @@ export const TransactionsPage = () => {
             ))}
           </select>
           <select
-            className="border rounded px-3 py-2"
+            className="rounded-lg border px-3 py-2 text-sm"
             value={personId}
             onChange={(e) => setPersonId(e.target.value)}
           >
-            <option value="">Person...</option>
+            <option value="">Persoană...</option>
             {persons?.map((person) => (
               <option key={person.id} value={person.id}>
                 {person.name}
@@ -197,7 +205,7 @@ export const TransactionsPage = () => {
           </Button>
           {isEditing && (
             <Button variant="ghost" onClick={resetForm}>
-              Cancel
+              Renunță
             </Button>
           )}
         </div>
@@ -206,7 +214,7 @@ export const TransactionsPage = () => {
       {formError && (
         <p
           role="alert"
-          className=" mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+          className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {formError.message}
         </p>
@@ -215,7 +223,7 @@ export const TransactionsPage = () => {
       {deleteTransaction.error && (
         <p
           role="alert"
-          className="mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
+          className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {deleteTransaction.error.message}
         </p>
@@ -226,11 +234,11 @@ export const TransactionsPage = () => {
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
             <tr>
-              <th className="px-3 py-2">Date</th>
-              <th className="px-3 py-2">Description</th>
-              <th className="px-3 py-2">Category</th>
-              <th className="px-3 py-2">Person</th>
-              <th className="px-3 py-2 text-right">Amount</th>
+              <th className="px-3 py-2">Data</th>
+              <th className="px-3 py-2">Descriere</th>
+              <th className="px-3 py-2">Categorie</th>
+              <th className="px-3 py-2">Persoană</th>
+              <th className="px-3 py-2 text-right">Sumă</th>
               <th className="px-3 py-2" />
             </tr>
           </thead>
@@ -253,7 +261,7 @@ export const TransactionsPage = () => {
                       color={transaction.categoryColor}
                     />
                   ) : (
-                    <span className="text-xs text-gray-400">Needs review</span>
+                    <span className="text-xs text-gray-400">De revizuit</span>
                   )}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2">
@@ -272,19 +280,19 @@ export const TransactionsPage = () => {
                       variant="ghost"
                       onClick={() => startEdit(transaction)}
                     >
-                      Edit
+                      Editează
                     </Button>
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        if (window.confirm("Delete this transaction?")) {
+                        if (window.confirm("Ștergi această tranzacție?")) {
                           if (editId === transaction.id) resetForm();
                           deleteTransaction.mutate(transaction.id);
                         }
                       }}
                       disabled={deleteTransaction.isPending}
                     >
-                      Delete
+                      Șterge
                     </Button>
                   </div>
                 </td>
@@ -295,10 +303,11 @@ export const TransactionsPage = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex items-center justify-between">
         <span className="text-sm text-gray-500">
-          Page {pageData ? pageData.page.number + 1 : 0} of{" "}
-          {pageData?.page.totalPages ?? 0} · {pageData?.page.totalElements ?? 0} total
+          Pagina {pageData ? pageData.page.number + 1 : 0} din{" "}
+          {pageData?.page.totalPages ?? 0} · {pageData?.page.totalElements ?? 0}{" "}
+          în total
         </span>
         <div className="flex gap-2">
           <Button
@@ -306,14 +315,14 @@ export const TransactionsPage = () => {
             onClick={() => setPage((p) => p - 1)}
             disabled={isFirstPage ?? true}
           >
-            Previous
+            Anterioară
           </Button>
           <Button
             variant="ghost"
             onClick={() => setPage((p) => p + 1)}
             disabled={isLastPage ?? true}
           >
-            Next
+            Următoare
           </Button>
         </div>
       </div>

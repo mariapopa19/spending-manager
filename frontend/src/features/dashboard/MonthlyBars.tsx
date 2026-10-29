@@ -33,7 +33,7 @@ export const MonthlyBars = ({ filters }: { filters: StatsFilters }) => {
 
   return (
     <section className="rounded-lg border border-gray-200 p-4">
-      <h2 className="mb-2 font-semibold">Last 6 months</h2>
+      <h2 className="mb-2 font-semibold">Ultimele 6 luni</h2>
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
@@ -41,8 +41,8 @@ export const MonthlyBars = ({ filters }: { filters: StatsFilters }) => {
             <YAxis />
             <Tooltip formatter={(value) => formatMoney(Number(value), "RON")} />
             <Legend />
-            <Bar dataKey="income" name="Income" fill="#43A047" />
-            <Bar dataKey="expenses" name="Expenses" fill="#E53935" />
+            <Bar dataKey="income" name="Venituri" fill="#43A047" />
+            <Bar dataKey="expenses" name="Cheltuieli" fill="#E53935" />
           </BarChart>
         </ResponsiveContainer>
       </div>

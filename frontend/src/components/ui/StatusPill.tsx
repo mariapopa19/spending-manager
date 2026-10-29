@@ -6,8 +6,8 @@ const styles: Record<ImportStatus, string> = {
 };
 
 const labels: Record<ImportStatus, string> = {
-  NEW: "new",
-  DUPLICATE: "aleady imported",
+  NEW: "nou",
+  DUPLICATE: "deja importat",
 };
 
 export const StatusPill = ({ status }: { status: ImportStatus }) => (

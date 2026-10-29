@@ -10,24 +10,24 @@ type Props = {
 export const DoneStep = ({ result, onAgain }: Props) => (
   <div className="flex flex-col items-start gap-4 rounded-lg border bg-green-50 p-6">
     <p className="text-lg">
-      Imported <strong>{result.imported}</strong> transaction
-      {result.imported === 1 ? "" : "s"}
+      Am importat <strong>{result.imported}</strong>{" "}
+      {result.imported === 1 ? "tranzacție" : "tranzacții"}
       {result.skipped > 0 && (
         <>
-          , skipped <strong>{result.skipped}</strong> already in the database
+          , am sărit <strong>{result.skipped}</strong> deja existente în baza de date
         </>
       )}
     </p>
-    <div className="flex-wrap items-center">
-      <Button onClick={onAgain}>Import another statement</Button>
+    <div className="flex flex-wrap items-center gap-2">
+      <Button onClick={onAgain}>Importă alt extras</Button>
       <Link
         to="/transactions"
         className="px-4 py-2 text-sm text-blue-600 underline"
       >
-        View transactions
+        Vezi tranzacțiile
       </Link>
       <Link to="/review" className="px-4 py-2 text-sm text-blue-600 underline">
-        Review uncategorized
+        Revizuiește tranzacțiile fără categorie
       </Link>
     </div>
   </div>

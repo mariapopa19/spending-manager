@@ -25,11 +25,13 @@ export const DashboardPage = () => {
         <select
           value={personId ?? ""}
           onChange={(event) =>
-            setPersonId(event.target.value ? Number(event.target.value) : undefined)
+            setPersonId(
+              event.target.value ? Number(event.target.value) : undefined,
+            )
           }
           className="rounded-lg border border-gray-200 px-2 py-1"
         >
-          <option value="">All persons</option>
+          <option value="">Toate persoanele</option>
           {persons?.map((person) => (
             <option key={person.id} value={person.id}>
               {person.name}
@@ -39,11 +41,13 @@ export const DashboardPage = () => {
         <select
           value={source ?? ""}
           onChange={(event) =>
-            setSource(event.target.value ? (event.target.value as Source) : undefined)
+            setSource(
+              event.target.value ? (event.target.value as Source) : undefined,
+            )
           }
           className="rounded-lg border border-gray-200 px-2 py-1"
         >
-          <option value="">All banks</option>
+          <option value="">Toate băncile</option>
           {IMPORT_SOURCES.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

@@ -6,9 +6,9 @@ export const TopMerchants = ({ filters }: { filters: StatsFilters }) => {
   const { data: merchantTotals = [], isLoading } = useTopMerchants(filters);
   return (
     <section className="rounded-lg border border-gray-200 p-4">
-      <h2 className="mb-2 font-semibold">Top 10 merchants</h2>
+      <h2 className="mb-2 font-semibold">Top 10 comercianți</h2>
       {!isLoading && merchantTotals.length === 0 ? (
-        <p className="text-gray-500">No transactions this month.</p>
+        <p className="text-gray-500">Nicio tranzacție luna aceasta.</p>
       ) : (
         <ol className="space-y-1 text-sm">
           {merchantTotals.map((merchantTotal) => (

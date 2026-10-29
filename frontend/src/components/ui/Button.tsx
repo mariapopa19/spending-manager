@@ -19,7 +19,7 @@ export const Button = ({
 }: Props) => (
   <button
     type={type}
-    className={`rounded border px-4 py-2 text-sm font-semibold disabled:opacity-50 ${variants[variant]} ${className}`}
+    className={`rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50 ${variants[variant]} ${className}`}
     {...rest}
   />
 );

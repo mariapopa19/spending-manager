@@ -8,7 +8,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const message =
-      error.response?.data?.message ?? error.message ?? "Request failed";
+      error.response?.data?.message ?? error.message ?? "Cererea a eșuat";
     return Promise.reject(new Error(message));
   },
 );

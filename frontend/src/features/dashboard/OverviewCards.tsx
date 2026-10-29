@@ -5,9 +5,9 @@ import type { StatsFilters } from "../../types/domain";
 
 export const OverviewCards = ({ filters }: { filters: StatsFilters }) => {
   const { data, isLoading, isError } = useOverview(filters);
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p>Se încarcă...</p>;
   if (isError || !data)
-    return <p className="text-red-600">Could not load overview.</p>;
+    return <p className="text-red-600">Nu am putut încărca sumarul.</p>;
 
   const cards = [
     { label: "Venituri", value: data.income },
@@ -33,7 +33,7 @@ export const OverviewCards = ({ filters }: { filters: StatsFilters }) => {
           to="/review"
           className="col-span-full text-sm text-amber-700 underline"
         >
-          {data.uncategorizedCount} transactions still need a category
+          {data.uncategorizedCount} tranzacții încă nu au categorie
         </Link>
       )}
     </div>

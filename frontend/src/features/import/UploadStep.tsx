@@ -32,14 +32,14 @@ export const UploadStep = ({
   const accept = IMPORT_SOURCES.find((s) => s.value === source)?.accept ?? "";
   const canPreview = source !== "" && personId !== "" && file !== null;
   return (
-    <div className="flex flex-col gap-4 rounded-lg border bg-white p-6">
-      <Field label="Bank">
+    <div className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4">
+      <Field label="Bancă">
         <select
-          className="rounded border border-gray-300 px-3 py-2 text-sm"
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
           value={source}
           onChange={(e) => onSource(e.target.value as Source | "")}
         >
-          <option value="">Choose a bank…</option>
+          <option value="">Alege banca…</option>
           {IMPORT_SOURCES.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -47,13 +47,13 @@ export const UploadStep = ({
           ))}
         </select>
       </Field>
-      <Field label="Person">
+      <Field label="Persoană">
         <select
-          className="rounded border border-gray-300 px-3 py-2 text-sm"
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
           value={personId}
           onChange={(e) => onPersonId(e.target.value)}
         >
-          <option value="">Choose a person…</option>
+          <option value="">Alege persoana…</option>
           {persons.map((person) => (
             <option key={person.id} value={person.id}>
               {person.name}
@@ -74,7 +74,7 @@ export const UploadStep = ({
       )}
       <div>
         <Button onClick={onPreview} disabled={!canPreview || isPending}>
-          {isPending ? "Reading…" : "Preview"}
+          {isPending ? "Se citește…" : "Previzualizează"}
         </Button>
       </div>
     </div>

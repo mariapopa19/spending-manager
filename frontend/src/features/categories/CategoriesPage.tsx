@@ -7,6 +7,7 @@ import {
   type CategoryInput,
 } from "./api";
 import { ColorPicker } from "../../components/ui/ColorPicker";
+import { Button } from "../../components/ui/Button";
 
 export const CategoriesPage = () => {
   const { data: categories, isLoading, isError, error } = useCategories(); // data: categories - rename data variable
@@ -49,30 +50,34 @@ export const CategoriesPage = () => {
     : createCategory.isPending;
   const getSubmitLabel = () => {
     if (isSubmitting) return "...";
-    if (isEditing) return "Save";
-    return "Add";
+    if (isEditing) return "Salvează";
+    return "Adaugă";
   };
 
-  if (isLoading) return <p className="p-4">Loading...</p>;
+  if (isLoading) return <p className="mx-auto max-w-6xl p-6">Se încarcă...</p>;
   if (isError)
-    return <p className="p-4 text-red-600">Error: {error.message}</p>;
+    return (
+      <p className="mx-auto max-w-6xl p-6 text-red-600">
+        Eroare: {error.message}
+      </p>
+    );
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Categories</h1>
+    <div className="mx-auto max-w-6xl space-y-6 p-6">
+      <h1 className="text-2xl font-semibold">Categorii</h1>
 
       {/* Add form */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 p-4">
         <input
-          className="border rounded px-3 py-2 flex-1 min-w-0"
-          placeholder="Category name"
+          className="min-w-40 flex-1 rounded-lg border px-3 py-2 text-sm"
+          placeholder="Nume categorie"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <ColorPicker value={color} onChange={setColor} />
         <input
-          className="border rounded px-3 py-2 w-32"
-          placeholder="Budget"
+          className="w-32 rounded-lg border px-3 py-2 text-sm"
+          placeholder="Buget"
           type="number"
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
@@ -85,85 +90,80 @@ export const CategoriesPage = () => {
           />
           <span>Exclus din buget</span>
         </label>
-        <button
-          className="bg-blue-600 text-white rounded px-4 py-2 disabled:opacity-50"
-          onClick={handleAdd}
-          disabled={isSubmitting}
-        >
+        <Button onClick={handleAdd} disabled={isSubmitting}>
           {getSubmitLabel()}
-        </button>
+        </Button>
         {editId !== null && (
-          <button
-            className="bg-gray-200 text-black rounded px-4 py-2 disabled:opacity-50"
-            onClick={resetForm}
-          >
-            Cancel
-          </button>
+          <Button variant="ghost" onClick={resetForm}>
+            Renunță
+          </Button>
         )}
       </div>
 
       {/* Table */}
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b text-left">
-            <th className="py-2">Category</th>
-            <th className="py-2 text-right">Monthly budget</th>
-            <th className="py-2 w-20"></th>
-            <th className="py-2 w-20"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories?.map((category) => (
-            <tr key={category.id} className="border-b">
-              <td className="py-2">
-                <span className="inline-flex items-center gap-2">
-                  <span
-                    className="w-3 h-3 rounded-full inline-block"
-                    style={{ backgroundColor: category.color ?? "#ccc" }}
-                  />
-                  {category.name}
-                  {category.excludedFromBudget && (
-                    <span className="text-xs text-gray-500">
-                      exclus din buget
-                    </span>
-                  )}
-                </span>
-              </td>
-              <td className="py-2 text-right">
-                {category.monthlyBudget != null
-                  ? `${category.monthlyBudget.toFixed(2)} RON`
-                  : "-"}
-              </td>
-              <td className="py-2 text-right">
-                {!category.excludedFromBudget && (
-                  <button
-                    className="text-red-600 hover:underline disabled:opacity-50"
-                    onClick={() => deleteCategory.mutate(category.id)}
-                    disabled={deleteCategory.isPending}
-                  >
-                    Delete
-                  </button>
-                )}
-              </td>
-              <td className="py-2 text-right">
-                {" "}
-                <button
-                  className="text-blue-600 hover:underline disabled:opacity-50"
-                  onClick={() => {
-                    setEditId(category.id);
-                    setName(category.name);
-                    setColor(category.color ?? "#64B5F6");
-                    setBudget(category.monthlyBudget?.toString() ?? "");
-                    setExcludedFromBudget(category.excludedFromBudget);
-                  }}
-                >
-                  Edit
-                </button>
-              </td>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+            <tr>
+              <th className="px-3 py-2">Categorie</th>
+              <th className="px-3 py-2 text-right">Buget lunar</th>
+              <th className="w-20 px-3 py-2"></th>
+              <th className="w-20 px-3 py-2"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y">
+            {categories?.map((category) => (
+              <tr key={category.id} className="hover:bg-gray-50">
+                <td className="px-3 py-2">
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      className="w-3 h-3 rounded-full inline-block"
+                      style={{ backgroundColor: category.color ?? "#ccc" }}
+                    />
+                    {category.name}
+                    {category.excludedFromBudget && (
+                      <span className="text-xs text-gray-500">
+                        exclus din buget
+                      </span>
+                    )}
+                  </span>
+                </td>
+                <td className="px-3 py-2 text-right font-mono">
+                  {category.monthlyBudget != null
+                    ? `${category.monthlyBudget.toFixed(2)} RON`
+                    : "-"}
+                </td>
+                <td className="px-3 py-2 text-right">
+                  {!category.excludedFromBudget && (
+                    <button
+                      className="text-red-600 hover:underline disabled:opacity-50"
+                      onClick={() => deleteCategory.mutate(category.id)}
+                      disabled={deleteCategory.isPending}
+                    >
+                      Șterge
+                    </button>
+                  )}
+                </td>
+                <td className="px-3 py-2 text-right">
+                  {" "}
+                  <button
+                    className="text-blue-600 hover:underline disabled:opacity-50"
+                    onClick={() => {
+                      setEditId(category.id);
+                      setName(category.name);
+                      setColor(category.color ?? "#64B5F6");
+                      setBudget(category.monthlyBudget?.toString() ?? "");
+                      setExcludedFromBudget(category.excludedFromBudget);
+                    }}
+                  >
+                    Editează
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -37,7 +37,7 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
   const current = categories.find((c) => c.id === categoryId);
 
   return (
-    <li className="rounded-lg border bg-white p-4">
+    <li className="rounded-lg border border-gray-200 p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-xs text-gray-500">{transaction.date}</p>
@@ -45,7 +45,9 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
             type="button"
             className={`w-full appearance-none bg-transparent p-0 text-left text-sm wrap-break-word ${expanded ? "" : "line-clamp-2"}`}
             onClick={() => setExpanded((e) => !e)}
-            title={expanded ? "Click to collapse" : "Click to expand"}
+            title={
+              expanded ? "Click pentru a restrânge" : "Click pentru a extinde"
+            }
           >
             {transaction.description}
           </button>
@@ -61,7 +63,7 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
 
       <div className="mt-3 flex flex-wrap items-center gap-3 border-t pt-3">
         <select
-          className="rounded-full border py-1.5 pl-4 pr-8 text-sm font-medium"
+          className="rounded-lg border py-1.5 pl-3 pr-8 text-sm font-medium"
           style={tintStyle(current?.color)}
           value={categoryId}
           disabled={busy}
@@ -69,7 +71,7 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
             setCategoryId(e.target.value === "" ? "" : Number(e.target.value))
           }
         >
-          <option value="">Choose...</option>
+          <option value="">Alege...</option>
           {categories.map((category) => (
             <option
               key={category.id}
@@ -92,13 +94,13 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
             disabled={busy}
             onChange={(e) => setAlways(e.target.checked)}
           />
-          Always do this
+          Creează o regulă
         </label>
 
         {always && (
           <input
-            className="w-56 rounded border px-3 py-1.5 text-sm"
-            placeholder="Text to match"
+            className="w-56 rounded-lg border px-3 py-1.5 text-sm"
+            placeholder="Text de căutat"
             value={pattern}
             disabled={busy}
             onChange={(e) => setPattern(e.target.value)}
@@ -110,13 +112,13 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
           onClick={handleSave}
           disabled={!canSave || busy}
         >
-          Save
+          Salvează
         </Button>
       </div>
 
       {always && !patternValid && (
         <p className="mt-2 text-xs text-red-600">
-          Pattern needs at least 3 characters
+          Textul trebuie să aibă cel puțin 3 caractere
         </p>
       )}
       {setCategory.error && (

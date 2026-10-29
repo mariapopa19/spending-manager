@@ -111,8 +111,8 @@ export const ImportPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      <h1 className="mb-4 text-2xl font-bold">Import a statement</h1>
+    <div className="mx-auto max-w-6xl space-y-6 p-6">
+      <h1 className="text-2xl font-semibold">Importă un extras de cont</h1>
       <StepRail step={wizard.step} />
       {wizard.step === "upload" && (
         <UploadStep

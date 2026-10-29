@@ -40,7 +40,7 @@ export const FileDropzone = ({ accept, file, onFile }: Props) => {
         className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 text-center w-full focus-visible:outline-none focus-visible:border-blue-500 ${dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50"}`}
       >
         <span className="font-semibold">
-          Drop the file here, or click to browse
+          Trage fișierul aici sau dă click ca să-l alegi
         </span>
         {file && (
           <span className="rounded border border-blue-600 bg-blue-50 px-2 py-0.5 font-mono text-blue-700 text-xs">

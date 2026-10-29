@@ -62,7 +62,7 @@ export const ColorPicker = ({ value, onChange }: Props) => {
     <div className="relative shrink-0">
       <button
         type="button"
-        aria-label="Choose color"
+        aria-label="Alege culoarea"
         onClick={() => setIsOpen((open) => !open)}
         className="h-10 w-10 rounded-full border-2 border-white shadow ring-1 ring-gray-300"
         style={{ backgroundColor: value }}
@@ -73,7 +73,7 @@ export const ColorPicker = ({ value, onChange }: Props) => {
           {/* invisible full-screen layer: clicking outside the panel closes it */}
           <button
             type="button"
-            aria-label="Close color picker"
+            aria-label="Închide selectorul de culori"
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
@@ -96,7 +96,7 @@ export const ColorPicker = ({ value, onChange }: Props) => {
             {/* custom color: the native picker, styled as a dashed circle */}
             <label
               className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-gray-400"
-              title="Custom color"
+              title="Culoare personalizată"
             >
               +
               <input

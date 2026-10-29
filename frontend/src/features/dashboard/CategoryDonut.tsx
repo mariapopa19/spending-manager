@@ -23,11 +23,11 @@ export const CategoryDonut = ({ filters }: { filters: StatsFilters }) => {
 
   const renderContent = () => {
     if (isLoading) {
-      return <p className="text-gray-500">Loading...</p>;
+      return <p className="text-gray-500">Se încarcă...</p>;
     }
 
     if (slices.length === 0) {
-      return <p className="text-gray-500">No spending this month.</p>;
+      return <p className="text-gray-500">Nicio cheltuială luna aceasta.</p>;
     }
 
     return (
@@ -51,7 +51,7 @@ export const CategoryDonut = ({ filters }: { filters: StatsFilters }) => {
 
   return (
     <section className="rounded-lg border border-gray-200 p-4">
-      <h2 className="mb-2 font-semibold">Spending by category</h2>
+      <h2 className="mb-2 font-semibold">Cheltuieli pe categorii</h2>
       {renderContent()}
     </section>
   );
