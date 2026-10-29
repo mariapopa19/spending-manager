@@ -6,6 +6,7 @@ import {
   useUpdateCategory,
   type CategoryInput,
 } from "./api";
+import { ColorPicker } from "../../components/ui/ColorPicker";
 
 export const CategoriesPage = () => {
   const { data: categories, isLoading, isError, error } = useCategories(); // data: categories - rename data variable
@@ -17,42 +18,28 @@ export const CategoriesPage = () => {
   const [color, setColor] = useState("#64B5F6");
   const [budget, setBudget] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
+  const [excludedFromBudget, setExcludedFromBudget] = useState(false);
 
   const resetForm = () => {
     setEditId(null);
     setName("");
     setColor("#64B5F6");
     setBudget("");
+    setExcludedFromBudget(false);
   };
 
   const handleAdd = () => {
     if (name.trim() === "") return;
+    const input: CategoryInput = {
+      name: name.trim(),
+      color,
+      monthlyBudget: budget ? Number(budget) : null,
+      excludedFromBudget,
+    };
     if (editId === null) {
-      createCategory.mutate(
-        {
-          name: name.trim(),
-          color,
-          monthlyBudget: budget ? Number(budget) : null,
-        },
-        {
-          onSuccess: resetForm,
-        },
-      );
+      createCategory.mutate(input, { onSuccess: resetForm });
     } else {
-      const input: CategoryInput = {
-        name: name.trim(),
-        color,
-        monthlyBudget: budget ? Number(budget) : null,
-      };
-      updateCategory.mutate(
-        {
-          id: editId,
-          input,
-        },
-        {
-          onSuccess: resetForm,
-        },
-      );
+      updateCategory.mutate({ id: editId, input }, { onSuccess: resetForm });
     }
   };
 
@@ -61,8 +48,8 @@ export const CategoriesPage = () => {
     ? updateCategory.isPending
     : createCategory.isPending;
   const getSubmitLabel = () => {
-    if(isSubmitting) return "...";
-    if(isEditing) return "Save";
+    if (isSubmitting) return "...";
+    if (isEditing) return "Save";
     return "Add";
   };
 
@@ -77,17 +64,12 @@ export const CategoriesPage = () => {
       {/* Add form */}
       <div className="flex gap-2 mb-6">
         <input
-          className="border rounded px-3 py-2 flex-1"
+          className="border rounded px-3 py-2 flex-1 min-w-0"
           placeholder="Category name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <input
-          type="color"
-          className="border rounded  w-12 h-10"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        />
+        <ColorPicker value={color} onChange={setColor} />
         <input
           className="border rounded px-3 py-2 w-32"
           placeholder="Budget"
@@ -95,6 +77,14 @@ export const CategoriesPage = () => {
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
         />
+        <label className="flex items-center gap-2 whitespace-nowrap text-sm">
+          <input
+            type="checkbox"
+            checked={excludedFromBudget}
+            onChange={(event) => setExcludedFromBudget(event.target.checked)}
+          />
+          <span>Exclus din buget</span>
+        </label>
         <button
           className="bg-blue-600 text-white rounded px-4 py-2 disabled:opacity-50"
           onClick={handleAdd}
@@ -132,6 +122,11 @@ export const CategoriesPage = () => {
                     style={{ backgroundColor: category.color ?? "#ccc" }}
                   />
                   {category.name}
+                  {category.excludedFromBudget && (
+                    <span className="text-xs text-gray-500">
+                      exclus din buget
+                    </span>
+                  )}
                 </span>
               </td>
               <td className="py-2 text-right">
@@ -140,13 +135,15 @@ export const CategoriesPage = () => {
                   : "-"}
               </td>
               <td className="py-2 text-right">
-                <button
-                  className="text-red-600 hover:underline disabled:opacity-50"
-                  onClick={() => deleteCategory.mutate(category.id)}
-                  disabled={deleteCategory.isPending}
-                >
-                  Delete
-                </button>
+                {!category.excludedFromBudget && (
+                  <button
+                    className="text-red-600 hover:underline disabled:opacity-50"
+                    onClick={() => deleteCategory.mutate(category.id)}
+                    disabled={deleteCategory.isPending}
+                  >
+                    Delete
+                  </button>
+                )}
               </td>
               <td className="py-2 text-right">
                 {" "}
@@ -157,6 +154,7 @@ export const CategoriesPage = () => {
                     setName(category.name);
                     setColor(category.color ?? "#64B5F6");
                     setBudget(category.monthlyBudget?.toString() ?? "");
+                    setExcludedFromBudget(category.excludedFromBudget);
                   }}
                 >
                   Edit

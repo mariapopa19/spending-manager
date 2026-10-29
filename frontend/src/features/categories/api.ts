@@ -7,6 +7,7 @@ export type CategoryInput = {
   name: string;
   color: string | null;
   monthlyBudget: number | null;
+  excludedFromBudget: boolean;
 };
 
 // read: all categories
@@ -42,9 +43,11 @@ export const useUpdateCategory = () => {
       const response = await api.put<Category>(`/categories/${id}`, input);
       return response.data;
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };
 
@@ -55,8 +58,10 @@ export const useDeleteCategory = () => {
     mutationFn: async (id: number) => {
       await api.delete(`/categories/${id}`);
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };

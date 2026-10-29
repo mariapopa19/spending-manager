@@ -31,6 +31,7 @@ public class CategoryService {
         category.setName(categoryRequest.name().trim());
         category.setColor(categoryRequest.color());
         category.setMonthlyBudget(categoryRequest.monthlyBudget());
+        category.setExcludedFromBudget(categoryRequest.excludedFromBudget());
         Category saved = categoryRepository.save(category);
         return toResponse(saved);
     }
@@ -41,6 +42,7 @@ public class CategoryService {
         category.setName(categoryRequest.name().trim());
         category.setColor(categoryRequest.color());
         category.setMonthlyBudget(categoryRequest.monthlyBudget());
+        category.setExcludedFromBudget(categoryRequest.excludedFromBudget());
         return toResponse(category);
     }
 
