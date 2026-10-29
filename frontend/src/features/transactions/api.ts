@@ -33,9 +33,11 @@ export const useCreateTransaction = () => {
       const response = await api.post<Transaction>("/transactions", input);
       return response.data;
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };
 
@@ -46,9 +48,11 @@ export const useUpdateTransaction = () => {
       const response = await api.put<Transaction>(`/transactions/${id}`, input);
       return response.data;
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };
 
@@ -58,8 +62,10 @@ export const useDeleteTransaction = () => {
     mutationFn: async (id: number) => {
       await api.delete(`/transactions/${id}`);
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };

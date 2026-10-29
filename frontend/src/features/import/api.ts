@@ -32,8 +32,10 @@ export const useConfirmImport = () => {
       );
       return response.data;
     },
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };

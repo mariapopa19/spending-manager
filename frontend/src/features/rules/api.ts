@@ -63,6 +63,9 @@ export const useApplyRules = () => {
       return response.data;
     },
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]),
   });
 };

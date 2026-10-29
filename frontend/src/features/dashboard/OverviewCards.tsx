@@ -19,7 +19,7 @@ export const OverviewCards = ({ filters }: { filters: StatsFilters }) => {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {cards.map((card) => (
-        <div key={card.label} className="rounded-lg border p-4">
+        <div key={card.label} className="rounded-lg border border-gray-200 p-4">
           <div className="text-sm text-gray-500">{card.label}</div>
           <div
             className={`text-2xl font-semibold ${card.emphasize && card.value < 0 ? "text-red-600" : ""}`}
@@ -31,7 +31,7 @@ export const OverviewCards = ({ filters }: { filters: StatsFilters }) => {
       {data.uncategorizedCount > 0 && (
         <Link
           to="/review"
-          className="cols-span-full text-sm text-amber-700 underline"
+          className="col-span-full text-sm text-amber-700 underline"
         >
           {data.uncategorizedCount} transactions still need a category
         </Link>

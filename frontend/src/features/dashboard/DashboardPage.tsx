@@ -4,11 +4,14 @@ import { usePersons } from "../persons/api";
 import { IMPORT_SOURCES } from "../import/types";
 import { OverviewCards } from "./OverviewCards";
 import { CategoryDonut } from "./CategoryDonut";
+import { MonthlyBars } from "./MonthlyBars";
+import { BudgetTable } from "./BudgetTable";
+import { TopMerchants } from "./TopMerchants";
+import { currentMonth } from "../../lib/month";
+import { MonthPicker } from "./MonthPicker";
 
 export const DashboardPage = () => {
-  const [month, setMonth] = useState(() =>
-    new Date().toISOString().slice(0, 7),
-  );
+  const [month, setMonth] = useState(currentMonth);
   const [personId, setPersonId] = useState<number | undefined>();
   const [source, setSource] = useState<Source | undefined>();
   const filters: StatsFilters = { month, personId, source };
@@ -18,21 +21,16 @@ export const DashboardPage = () => {
   return (
     <main className="mx-auto max-w-6xl space-y-6 p-6">
       <div className="flex flex-wrap items-end gap-3">
-        <input
-          type="month"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          className="rouded border px-2 py-1"
-        />
+        <MonthPicker month={month} onChange={setMonth} />
         <select
           value={personId ?? ""}
-          onChange={(e) =>
-            setPersonId(e.target.value ? Number(e.target.value) : undefined)
+          onChange={(event) =>
+            setPersonId(event.target.value ? Number(event.target.value) : undefined)
           }
-          className="rounded border px-2 py-1"
+          className="rounded-lg border border-gray-200 px-2 py-1"
         >
           <option value="">All persons</option>
-          {persons?.map((person: { id: number; name: string }) => (
+          {persons?.map((person) => (
             <option key={person.id} value={person.id}>
               {person.name}
             </option>
@@ -40,10 +38,10 @@ export const DashboardPage = () => {
         </select>
         <select
           value={source ?? ""}
-          onChange={(e) =>
-            setSource(e.target.value ? (e.target.value as Source) : undefined)
+          onChange={(event) =>
+            setSource(event.target.value ? (event.target.value as Source) : undefined)
           }
-          className="rounded border px-2 py-1"
+          className="rounded-lg border border-gray-200 px-2 py-1"
         >
           <option value="">All banks</option>
           {IMPORT_SOURCES.map((option) => (
@@ -55,8 +53,8 @@ export const DashboardPage = () => {
       </div>
       <OverviewCards filters={filters} />
       <div className="grid gap-6 lg:grid-cols-2">
-          <CategoryDonut filters={filters} />
-          <MonthlyBars filters={filters} />
+        <CategoryDonut filters={filters} />
+        <MonthlyBars filters={filters} />
       </div>
       <BudgetTable filters={filters} />
       <TopMerchants filters={filters} />
