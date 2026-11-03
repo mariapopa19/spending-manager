@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import ro.mariapopa.spendingmanager.AuthenticatedMockMvcConfig;
 import ro.mariapopa.spendingmanager.TestcontainersConfiguration;
 import ro.mariapopa.spendingmanager.category.CategoryResponse;
 import ro.mariapopa.spendingmanager.common.ApiError;
@@ -27,7 +28,7 @@ import ro.mariapopa.spendingmanager.transaction.TransactionResponse;
 
 @SpringBootTest
 @AutoConfigureRestTestClient
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, AuthenticatedMockMvcConfig.class})
 public class StatsControllerTest {
     @Autowired
     RestTestClient restTestClient;

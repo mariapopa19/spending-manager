@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import ro.mariapopa.spendingmanager.AuthenticatedMockMvcConfig;
 import ro.mariapopa.spendingmanager.TestcontainersConfiguration;
 import ro.mariapopa.spendingmanager.category.CategoryResponse;
 import ro.mariapopa.spendingmanager.category.CategoryRuleRequest;
@@ -21,7 +22,7 @@ import ro.mariapopa.spendingmanager.category.CategoryRuleResponse;
 
 @SpringBootTest
 @AutoConfigureRestTestClient
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, AuthenticatedMockMvcConfig.class})
 public class TransactionControllerTest {
     @Autowired
     RestTestClient restTestClient;
