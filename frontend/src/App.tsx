@@ -6,19 +6,24 @@ import { ImportPage } from "./features/import/ImportPage";
 import { ReviewPage } from "./features/review/ReviewPage";
 import { RulesPage } from "./features/rules/RulesPage";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
+import { RequireAuth } from "./features/auth/RequireAuth";
+import { LoginPage } from "./features/auth/LoginPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/import" element={<ImportPage />} />
-          <Route path="/review" element={<ReviewPage />} />
-          <Route path="/rules" element={<RulesPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/import" element={<ImportPage />} />
+            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/rules" element={<RulesPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

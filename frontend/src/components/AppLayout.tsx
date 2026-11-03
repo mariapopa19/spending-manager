@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useUncategorized } from "../features/review/api";
+import { useLogout, useMe } from "../features/auth/api";
+import { Button } from "./ui/Button";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "font-bold text-blue-600" : "text-gray-600 hover:text-blue-600";
@@ -7,6 +9,8 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 export const AppLayout = () => {
   const { data } = useUncategorized(0, 1);
   const count = data?.page.totalElements ?? 0;
+  const me = useMe(); // cached by RequireAuth already, so no extra request
+  const logout = useLogout();
   return (
     <div className="min-h-screen">
       <nav className="border-b bg-gray-50">
@@ -35,6 +39,17 @@ export const AppLayout = () => {
           <NavLink to="/rules" className={linkClass}>
             Reguli
           </NavLink>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-sm text-gray-600">{me.data?.username}</span>
+            <Button
+              variant="ghost"
+              className="py-1"
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
+            >
+              Deconectare
+            </Button>
+          </div>
         </div>
       </nav>
       <Outlet />
