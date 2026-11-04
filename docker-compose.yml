@@ -3,12 +3,30 @@ services:
     image: postgres:18
     environment:
       POSTGRES_DB: spending_manager
-      POSTGRES_USER: spending_manager
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spending}  # local-only, fine
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # local-only, fine
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U  $${POSTGRES_USER} -d spending_manager"]
+      interval: 5s
+      retries: 10
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/spending_manager
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_USERNAME: ${APP_USERNAME}
+      APP_PASSWORD_HASH: ${APP_PASSWORD_HASH}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:

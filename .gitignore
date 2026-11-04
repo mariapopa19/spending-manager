@@ -67,3 +67,4 @@ desktop.ini
 # ===================================
 postgres-data/
 *.pid
+backend/src/main/resources/static/

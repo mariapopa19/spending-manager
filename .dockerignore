@@ -1,0 +1,18 @@
+.git
+**/.idea
+**/node_modules
+**/target
+frontend/dist
+backend/src/main/resources/static
+
+# secrets
+.env
+.env.*
+**/application-local.properties
+
+# real statements, never inside an image
+bank-statements/
+**/*.csv
+**/*.xlsx
+**/*.xls
+**/*.pdf
