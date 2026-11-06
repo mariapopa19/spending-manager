@@ -39,8 +39,18 @@ export const AppLayout = () => {
           <NavLink to="/rules" className={linkClass}>
             Reguli
           </NavLink>
+          {me.data?.role === "ADMIN" && (
+            <NavLink to="/users" className={linkClass}>
+              Utilizatori
+            </NavLink>
+          )}
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-sm text-gray-600">{me.data?.username}</span>
+            <NavLink
+              to="/account"
+              className={({ isActive }) => `${linkClass({ isActive })} text-sm`}
+            >
+              {me.data?.username}
+            </NavLink>
             <Button
               variant="ghost"
               className="py-1"

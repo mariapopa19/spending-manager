@@ -59,4 +59,10 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(Instant.now(), HttpStatus.BAD_REQUEST.value(), "Validation failed", fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ApiError> handleInvalidPassword(InvalidPasswordException ex) {
+        ApiError error = new ApiError(Instant.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

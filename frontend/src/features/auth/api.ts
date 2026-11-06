@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../lib/apiClient";
 import { ApiError } from "../../lib/ApiError";
 import { useNavigate } from "react-router-dom";
+import type { UserRole } from "../../types/domain";
 
 export type LoginInput = {
   username: string;
   password: string;
 };
 
-type MeResponse = { username: string };
+type MeResponse = { username: string; role: UserRole };
 
 export const useMe = () => {
   return useQuery({

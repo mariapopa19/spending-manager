@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     @GetMapping("/me")
     public MeResponse authMe(Authentication authentication) {
-        return new MeResponse(authentication.getName());
+        String authority = authentication.getAuthorities().iterator().next().getAuthority();
+        UserRole role = UserRole.valueOf(authority.substring("ROLE_".length()));
+        return new MeResponse(authentication.getName(), role);
     }
 }

@@ -39,7 +39,8 @@ class AuthControllerTest {
     void whenMeWithLoggedInUser_thenReturnUsername() throws Exception {
         mockMvc.perform(get(ME_URL).with(user("maria")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("maria"));
+                .andExpect(jsonPath("$.username").value("maria"))
+                .andExpect(jsonPath("$.role").value("USER"));
     }
 
     @Test

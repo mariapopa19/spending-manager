@@ -8,6 +8,9 @@ import { RulesPage } from "./features/rules/RulesPage";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { RequireAuth } from "./features/auth/RequireAuth";
 import { LoginPage } from "./features/auth/LoginPage";
+import { AccountPage } from "./features/auth/AccountPage";
+import { UsersPage } from "./features/users/UsersPage";
+import { RequireAdmin } from "./features/auth/RequireAdmin";
 
 function App() {
   return (
@@ -23,6 +26,10 @@ function App() {
             <Route path="/import" element={<ImportPage />} />
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/rules" element={<RulesPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route element={<RequireAdmin />}>
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

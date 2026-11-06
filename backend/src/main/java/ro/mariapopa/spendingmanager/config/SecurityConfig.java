@@ -3,6 +3,7 @@ package ro.mariapopa.spendingmanager.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -21,6 +22,10 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.requestMatchers("/actuator/health")
                         .permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/me/password")
+                        .authenticated()
+                        .requestMatchers("/api/users/**")
+                        .hasRole("ADMIN")
                         .requestMatchers("/api/**", "/actuator/**")
                         .authenticated()
                         .anyRequest()
@@ -40,13 +45,5 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    UserDetailsService userDetailsService(
-            @Value("${app.auth.username}") String username, @Value("${app.auth.password-hash}") String passwordHash) {
-        UserDetails user =
-                User.withUsername(username).password(passwordHash).roles("USER").build();
-        return new InMemoryUserDetailsManager(user);
     }
 }

@@ -70,6 +70,13 @@ export type StatsFilters = {
   source?: Source;
 };
 
+export type User = {
+  id: number;
+  username: string;
+  role: UserRole;
+  enabled: boolean;
+};
+
 export type Page<T> = {
   content: T[];
   page: {
@@ -81,3 +88,5 @@ export type Page<T> = {
 };
 
 export type Source = "REVOLUT" | "BT_PAY" | "BCR_GEORGE" | "MANUAL";
+
+export type UserRole = "ADMIN" | "USER";
