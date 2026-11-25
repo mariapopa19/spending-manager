@@ -2,12 +2,11 @@ package ro.mariapopa.spendingmanager.person;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/persons")
@@ -32,8 +31,7 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<PersonResponse> create(@Valid @RequestBody PersonRequest request) {
         PersonResponse created = personService.create(request);
-        return ResponseEntity
-                .created(URI.create("/api/persons/" + created.id()))
+        return ResponseEntity.created(URI.create("/api/persons/" + created.id()))
                 .body(created);
     }
 

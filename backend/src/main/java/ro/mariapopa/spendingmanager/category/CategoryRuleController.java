@@ -12,38 +12,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/category-rules")
 @Tag(name = "Category rule")
 public class CategoryRuleController {
-  private final CategoryRuleService ruleService;
+    private final CategoryRuleService ruleService;
 
-  public CategoryRuleController(CategoryRuleService ruleService) {
-    this.ruleService = ruleService;
-  }
+    public CategoryRuleController(CategoryRuleService ruleService) {
+        this.ruleService = ruleService;
+    }
 
-  @GetMapping
-  public List<CategoryRuleResponse> findAll() {
-    return ruleService.findAll();
-  }
+    @GetMapping
+    public List<CategoryRuleResponse> findAll() {
+        return ruleService.findAll();
+    }
 
-  @GetMapping("/{id}")
-  public CategoryRuleResponse findById(@PathVariable Long id) {
-    return ruleService.findById(id);
-  }
+    @GetMapping("/{id}")
+    public CategoryRuleResponse findById(@PathVariable Long id) {
+        return ruleService.findById(id);
+    }
 
-  @PostMapping
-  public ResponseEntity<CategoryRuleResponse> create(
-      @Valid @RequestBody CategoryRuleRequest request) {
-    CategoryRuleResponse created = ruleService.create(request);
-    return ResponseEntity.created(URI.create("/api/category-rules/" + created.id())).body(created);
-  }
+    @PostMapping
+    public ResponseEntity<CategoryRuleResponse> create(@Valid @RequestBody CategoryRuleRequest request) {
+        CategoryRuleResponse created = ruleService.create(request);
+        return ResponseEntity.created(URI.create("/api/category-rules/" + created.id()))
+                .body(created);
+    }
 
-  @PutMapping("/{id}")
-  public CategoryRuleResponse update(
-      @PathVariable Long id, @Valid @RequestBody CategoryRuleRequest request) {
-    return ruleService.update(id, request);
-  }
+    @PutMapping("/{id}")
+    public CategoryRuleResponse update(@PathVariable Long id, @Valid @RequestBody CategoryRuleRequest request) {
+        return ruleService.update(id, request);
+    }
 
-  @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable Long id) {
-    ruleService.delete(id);
-  }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        ruleService.delete(id);
+    }
 }

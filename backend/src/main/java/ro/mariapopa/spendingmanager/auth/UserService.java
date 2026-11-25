@@ -1,13 +1,12 @@
 package ro.mariapopa.spendingmanager.auth;
 
+import java.util.List;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mariapopa.spendingmanager.common.DuplicateResourceException;
 import ro.mariapopa.spendingmanager.common.InvalidPasswordException;
-
-import java.util.List;
 
 @Service
 @Transactional

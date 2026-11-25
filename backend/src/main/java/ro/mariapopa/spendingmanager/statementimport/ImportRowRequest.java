@@ -7,8 +7,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ImportRowRequest(
-    @NotNull LocalDate date,
-    @NotNull BigDecimal amount,
-    @NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "ISO 4217 code, e.g. RON") String currency,
-    @NotBlank String description,
-    Long categoryId) {}
+        @NotNull LocalDate date,
+        @NotNull BigDecimal amount,
+
+        @NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "ISO 4217 code, e.g. RON")
+        String currency,
+
+        @NotBlank String description,
+        Long categoryId) {}

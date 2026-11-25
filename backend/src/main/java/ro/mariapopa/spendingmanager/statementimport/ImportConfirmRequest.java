@@ -7,4 +7,6 @@ import java.util.List;
 import ro.mariapopa.spendingmanager.transaction.Source;
 
 public record ImportConfirmRequest(
-    @NotNull Source source, @NotNull Long personId, @NotEmpty List<@Valid ImportRowRequest> rows) {}
+        @NotNull Source source,
+        @NotNull Long personId,
+        @NotEmpty List<@Valid ImportRowRequest> rows) {}

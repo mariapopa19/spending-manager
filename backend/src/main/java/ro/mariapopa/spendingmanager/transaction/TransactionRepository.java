@@ -7,15 +7,15 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-  @EntityGraph(attributePaths = {"category", "person"})
-  Page<Transaction> findAll(Pageable pageable);
+    @EntityGraph(attributePaths = {"category", "person"})
+    Page<Transaction> findAll(Pageable pageable);
 
-  Page<Transaction> findAllByPersonId(Long personId, Pageable pageable);
+    Page<Transaction> findAllByPersonId(Long personId, Pageable pageable);
 
-  boolean existsByImportHash(String importHash);
+    boolean existsByImportHash(String importHash);
 
-  List<Transaction> findByCategoryIsNull();
+    List<Transaction> findByCategoryIsNull();
 
-  @EntityGraph(attributePaths = {"category", "person"})
-  Page<Transaction> findByCategoryIsNull(Pageable pageable);
+    @EntityGraph(attributePaths = {"category", "person"})
+    Page<Transaction> findByCategoryIsNull(Pageable pageable);
 }

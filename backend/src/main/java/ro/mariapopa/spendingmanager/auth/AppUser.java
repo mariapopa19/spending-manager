@@ -1,7 +1,6 @@
 package ro.mariapopa.spendingmanager.auth;
 
 import jakarta.persistence.*;
-
 import java.time.Instant;
 
 @Entity

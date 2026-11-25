@@ -5,7 +5,7 @@ import java.util.List;
 import ro.mariapopa.spendingmanager.transaction.Source;
 
 public interface StatementParser {
-  Source source();
+    Source source();
 
-  List<ParsedTransaction> parse(InputStream in);
+    List<ParsedTransaction> parse(InputStream in);
 }
