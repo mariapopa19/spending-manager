@@ -18,6 +18,4 @@ public record TransactionResponse(
         String personName,
         Source source,
         String importHash,
-        Instant createdAt
-) {
-}
+        Instant createdAt) {}

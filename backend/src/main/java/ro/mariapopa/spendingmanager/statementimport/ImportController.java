@@ -17,25 +17,25 @@ import ro.mariapopa.spendingmanager.transaction.Source;
 @RequestMapping("/api/imports")
 @Tag(name = "Import")
 public class ImportController {
-  private final ImportService importService;
+    private final ImportService importService;
 
-  public ImportController(ImportService importService) {
-    this.importService = importService;
-  }
-
-  @PostMapping(value = "/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ImportPreviewResponse preview(
-      @RequestParam Source source, @RequestParam MultipartFile file) throws IOException {
-    if (file.isEmpty()) {
-      throw new StatementParseException("The upload file is empty");
+    public ImportController(ImportService importService) {
+        this.importService = importService;
     }
-    try (InputStream in = file.getInputStream()) {
-      return importService.preview(source, in);
-    }
-  }
 
-  @PostMapping("/confirm")
-  public ImportResultResponse confirm(@Valid @RequestBody ImportConfirmRequest request) {
-    return importService.confirm(request.source(), request.personId(), request.rows());
-  }
+    @PostMapping(value = "/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportPreviewResponse preview(@RequestParam Source source, @RequestParam MultipartFile file)
+            throws IOException {
+        if (file.isEmpty()) {
+            throw new StatementParseException("The upload file is empty");
+        }
+        try (InputStream in = file.getInputStream()) {
+            return importService.preview(source, in);
+        }
+    }
+
+    @PostMapping("/confirm")
+    public ImportResultResponse confirm(@Valid @RequestBody ImportConfirmRequest request) {
+        return importService.confirm(request.source(), request.personId(), request.rows());
+    }
 }

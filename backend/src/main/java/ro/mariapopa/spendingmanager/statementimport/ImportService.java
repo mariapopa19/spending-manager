@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.mariapopa.spendingmanager.category.CategorizationService;
@@ -39,11 +38,9 @@ public class ImportService {
         // toMap's 2-arg form throws IllegalStateException on a duplicate key. Deliberate:
         // do NOT "fix" that crash with a merge function. Two parsers claiming one Source is a
         // bug, and silently picking one hides it until the totals are wrong.
-        this.parsers =
-                parsers.stream() // the ingredients
-                        .collect(
-                                Collectors.toMap( // hand the recipe to the cook → get a Map
-                                        StatementParser::source, Function.identity()));
+        this.parsers = parsers.stream() // the ingredients
+                .collect(Collectors.toMap( // hand the recipe to the cook → get a Map
+                        StatementParser::source, Function.identity()));
         this.transactionRepository = transactionRepository;
         this.personRepository = personRepository;
         this.categorizationService = categorizationService;
@@ -62,42 +59,38 @@ public class ImportService {
         var match = categorizationService.matcher();
 
         for (ParsedTransaction parsedTransaction : parsedTransactions) {
-            String hash =
-                    ImportHasher.hash(
-                            parsedTransaction.date(),
-                            parsedTransaction.amount(),
-                            parsedTransaction.currency(),
-                            parsedTransaction.description(),
-                            source);
+            String hash = ImportHasher.hash(
+                    parsedTransaction.date(),
+                    parsedTransaction.amount(),
+                    parsedTransaction.currency(),
+                    parsedTransaction.description(),
+                    source);
 
-            ImportStatus status =
-                    claimIfNew(hash, seenInThisFile) ? ImportStatus.NEW : ImportStatus.DUPLICATE;
+            ImportStatus status = claimIfNew(hash, seenInThisFile) ? ImportStatus.NEW : ImportStatus.DUPLICATE;
 
             Optional<Category> category = Optional.empty();
-            if(status == ImportStatus.NEW) {
+            if (status == ImportStatus.NEW) {
                 category = match.apply(parsedTransaction.description());
             }
 
-            rows.add(
-                    new ImportPreviewRow(
-                            parsedTransaction.date(),
-                            parsedTransaction.amount(),
-                            parsedTransaction.currency(),
-                            parsedTransaction.description(),
-                            status,
-                            category.map(Category::getId).orElse(null),
-                            category.map(Category::getName).orElse(null),
-                            category.map(Category::getColor).orElse(null)));
+            rows.add(new ImportPreviewRow(
+                    parsedTransaction.date(),
+                    parsedTransaction.amount(),
+                    parsedTransaction.currency(),
+                    parsedTransaction.description(),
+                    status,
+                    category.map(Category::getId).orElse(null),
+                    category.map(Category::getName).orElse(null),
+                    category.map(Category::getColor).orElse(null)));
         }
 
         return ImportPreviewResponse.of(rows);
     }
 
     public ImportResultResponse confirm(Source source, Long personId, List<ImportRowRequest> rows) {
-        Person person =
-                personRepository
-                        .findById(personId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Person", personId));
+        Person person = personRepository
+                .findById(personId)
+                .orElseThrow(() -> new ResourceNotFoundException("Person", personId));
 
         // reject rows claiming a source we can't import, so confirm can't accept
         // what preview would have refused
@@ -121,9 +114,7 @@ public class ImportService {
         }
 
         for (ImportRowRequest row : rows) {
-            String hash =
-                    ImportHasher.hash(row.date(), row.amount(), row.currency(), row.description(), source);
-
+            String hash = ImportHasher.hash(row.date(), row.amount(), row.currency(), row.description(), source);
 
             if (claimIfNew(hash, seenInThisFile)) {
                 Transaction transaction = new Transaction();

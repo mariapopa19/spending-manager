@@ -16,54 +16,50 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/transactions")
 @Tag(name = "Transaction")
 public class TransactionController {
-  private final TransactionService transactionService;
+    private final TransactionService transactionService;
 
-  public TransactionController(TransactionService transactionService) {
-    this.transactionService = transactionService;
-  }
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
-  @GetMapping
-  public Page<TransactionResponse> findAll(
-      @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable,
-      @RequestParam(defaultValue = "false") boolean uncategorized) {
+    @GetMapping
+    public Page<TransactionResponse> findAll(
+            @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(defaultValue = "false") boolean uncategorized) {
 
-    return transactionService.findAll(pageable, uncategorized);
-  }
+        return transactionService.findAll(pageable, uncategorized);
+    }
 
-  @GetMapping("/{id}")
-  public TransactionResponse findById(@PathVariable Long id) {
-    return transactionService.findById(id);
-  }
+    @GetMapping("/{id}")
+    public TransactionResponse findById(@PathVariable Long id) {
+        return transactionService.findById(id);
+    }
 
-  @PostMapping
-  public ResponseEntity<TransactionResponse> create(
-      @Valid @RequestBody TransactionRequest request) {
-    TransactionResponse created = transactionService.create(request);
-    return ResponseEntity.created(URI.create("/api/transactions/" + created.id())).body(created);
-  }
+    @PostMapping
+    public ResponseEntity<TransactionResponse> create(@Valid @RequestBody TransactionRequest request) {
+        TransactionResponse created = transactionService.create(request);
+        return ResponseEntity.created(URI.create("/api/transactions/" + created.id()))
+                .body(created);
+    }
 
-  @PutMapping("/{id}")
-  public TransactionResponse update(
-      @PathVariable Long id, @Valid @RequestBody TransactionRequest request) {
-    return transactionService.update(id, request);
-  }
+    @PutMapping("/{id}")
+    public TransactionResponse update(@PathVariable Long id, @Valid @RequestBody TransactionRequest request) {
+        return transactionService.update(id, request);
+    }
 
-  @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable Long id) {
-    transactionService.delete(id);
-  }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        transactionService.delete(id);
+    }
 
-  @PostMapping("/apply-rules")
-  public ApplyRulesResponse applyCategoryRules() {
-    return new ApplyRulesResponse(transactionService.applyToUncategorized());
-  }
+    @PostMapping("/apply-rules")
+    public ApplyRulesResponse applyCategoryRules() {
+        return new ApplyRulesResponse(transactionService.applyToUncategorized());
+    }
 
-  @PatchMapping("/{id}/category")
-  @Operation(
-      summary = "Set a transaction's category, optionally creating a rule",
-      description =
-          """
+    @PatchMapping("/{id}/category")
+    @Operation(summary = "Set a transaction's category, optionally creating a rule", description = """
                   Assigns the given category to this transaction.
 
                   If `createRule` is provided, a categorization rule is also created that maps
@@ -81,8 +77,7 @@ public class TransactionController {
                   - **404**: transaction or category not found
                   - **409**: a rule with this pattern already exists; nothing was changed
                   """)
-  public TransactionResponse setCategory(
-      @PathVariable Long id, @Valid @RequestBody SetCategoryRequest request) {
-    return transactionService.setCategory(id, request);
-  }
+    public TransactionResponse setCategory(@PathVariable Long id, @Valid @RequestBody SetCategoryRequest request) {
+        return transactionService.setCategory(id, request);
+    }
 }

@@ -12,8 +12,7 @@ public class Person {
     @Column(nullable = false)
     private String name;
 
-    public Person() {
-    }
+    public Person() {}
 
     public Long getId() {
         return id;
@@ -33,9 +32,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "Person{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }

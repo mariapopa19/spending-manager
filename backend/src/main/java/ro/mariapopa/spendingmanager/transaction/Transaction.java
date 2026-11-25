@@ -1,12 +1,11 @@
 package ro.mariapopa.spendingmanager.transaction;
 
 import jakarta.persistence.*;
-import ro.mariapopa.spendingmanager.category.Category;
-import ro.mariapopa.spendingmanager.person.Person;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import ro.mariapopa.spendingmanager.category.Category;
+import ro.mariapopa.spendingmanager.person.Person;
 
 @Entity
 @Table(name = "transaction")
@@ -47,8 +46,7 @@ public class Transaction {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public Transaction() {
-    }
+    public Transaction() {}
 
     public Long getId() {
         return id;
@@ -147,18 +145,17 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "id=" + id +
-                ", date=" + date +
-                ", amount=" + amount +
-                ", currency='" + currency + '\'' +
-                ", description='" + description + '\'' +
-                ", merchant='" + merchant + '\'' +
-                ", categoryId=" + (category != null ? category.getId() : null) +
-                ", personId=" + (person != null ? person.getId() : null) +
-                ", source='" + source + '\'' +
-                ", importHash='" + importHash + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+        return "Transaction{" + "id="
+                + id + ", date="
+                + date + ", amount="
+                + amount + ", currency='"
+                + currency + '\'' + ", description='"
+                + description + '\'' + ", merchant='"
+                + merchant + '\'' + ", categoryId="
+                + (category != null ? category.getId() : null) + ", personId="
+                + (person != null ? person.getId() : null) + ", source='"
+                + source + '\'' + ", importHash='"
+                + importHash + '\'' + ", createdAt="
+                + createdAt + '}';
     }
 }
