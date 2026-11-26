@@ -18,13 +18,12 @@ import ro.mariapopa.spendingmanager.transaction.Source;
 @Tag(name = "Import")
 public class ImportController {
     private final ImportService importService;
-    private final String multipartFormDataValue = MediaType.MULTIPART_FORM_DATA_VALUE;
 
     public ImportController(ImportService importService) {
         this.importService = importService;
     }
 
-    @PostMapping(value = "/preview", consumes = multipartFormDataValue)
+    @PostMapping(value = "/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImportPreviewResponse preview(
             @RequestParam Source source, @RequestParam Long personId, @RequestParam MultipartFile file)
             throws IOException {
