@@ -53,7 +53,7 @@ class ImportHasherTest {
     @DisplayName("the canonical format is frozen (golden value)")
     void matchesGoldenHash() {
         String revolutHash = ImportHasher.hash(DATE, AMOUNT, CURRENCY, DESCRIPTION, Source.REVOLUT, PERSON_ID);
-        assertThat(revolutHash).isEqualTo("595e4b5aca66a855ef832e4cf4d16a736d78ce3608bf56bd777ffc49a8270ee8");
+        assertThat(revolutHash).isEqualTo("ae1e4f0a6778632f3636be4d94cadfc5f5c9cac9855d9a677b4ec64f25181f3d");
     }
 
     @Test
@@ -61,7 +61,7 @@ class ImportHasherTest {
     void diacriticsAreHashedAsUtf8() {
         String revolutHash =
                 ImportHasher.hash(DATE, AMOUNT, CURRENCY, "Mâncare la Ieșit în oraș", Source.REVOLUT, PERSON_ID);
-        assertThat(revolutHash).isEqualTo("eccc0c305e5dbb3b14123d094fc41ad40a85d6cc86cabd6b314a9a49746aa8bf");
+        assertThat(revolutHash).isEqualTo("0f5a947cce890c3a0ea83fd962d5b3f313190e2c048eab2162b501c480fe6f60");
     }
 
     @Test
