@@ -18,19 +18,21 @@ import ro.mariapopa.spendingmanager.transaction.Source;
 @Tag(name = "Import")
 public class ImportController {
     private final ImportService importService;
+    private final String multipartFormDataValue = MediaType.MULTIPART_FORM_DATA_VALUE;
 
     public ImportController(ImportService importService) {
         this.importService = importService;
     }
 
-    @PostMapping(value = "/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImportPreviewResponse preview(@RequestParam Source source, @RequestParam MultipartFile file)
+    @PostMapping(value = "/preview", consumes = multipartFormDataValue)
+    public ImportPreviewResponse preview(
+            @RequestParam Source source, @RequestParam Long personId, @RequestParam MultipartFile file)
             throws IOException {
         if (file.isEmpty()) {
             throw new StatementParseException("The upload file is empty");
         }
         try (InputStream in = file.getInputStream()) {
-            return importService.preview(source, in);
+            return importService.preview(source, personId, in);
         }
     }
 

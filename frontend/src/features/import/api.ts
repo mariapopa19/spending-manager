@@ -9,9 +9,18 @@ import { api } from "../../lib/apiClient";
 
 export const usePreviewImport = () =>
   useMutation({
-    mutationFn: async ({ source, file }: { source: Source; file: File }) => {
+    mutationFn: async ({
+      source,
+      personId,
+      file,
+    }: {
+      source: Source;
+      personId: number;
+      file: File;
+    }) => {
       const formData = new FormData();
       formData.append("source", source);
+      formData.append("personId", String(personId));
       formData.append("file", file);
 
       const response = await api.post<ImportPreviewResponse>(

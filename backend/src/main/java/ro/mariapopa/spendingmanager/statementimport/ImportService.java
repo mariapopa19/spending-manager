@@ -48,8 +48,9 @@ public class ImportService {
     }
 
     @Transactional(readOnly = true)
-    public ImportPreviewResponse preview(Source source, InputStream in) {
+    public ImportPreviewResponse preview(Source source, Long personId, InputStream in) {
         StatementParser parser = requireParser(source);
+        Person person = requirePerson(personId);
 
         List<ParsedTransaction> parsedTransactions = parser.parse(in);
 
@@ -64,7 +65,8 @@ public class ImportService {
                     parsedTransaction.amount(),
                     parsedTransaction.currency(),
                     parsedTransaction.description(),
-                    source);
+                    source,
+                    person.getId());
 
             ImportStatus status = claimIfNew(hash, seenInThisFile) ? ImportStatus.NEW : ImportStatus.DUPLICATE;
 
@@ -88,9 +90,7 @@ public class ImportService {
     }
 
     public ImportResultResponse confirm(Source source, Long personId, List<ImportRowRequest> rows) {
-        Person person = personRepository
-                .findById(personId)
-                .orElseThrow(() -> new ResourceNotFoundException("Person", personId));
+        Person person = requirePerson(personId);
 
         // reject rows claiming a source we can't import, so confirm can't accept
         // what preview would have refused
@@ -114,7 +114,8 @@ public class ImportService {
         }
 
         for (ImportRowRequest row : rows) {
-            String hash = ImportHasher.hash(row.date(), row.amount(), row.currency(), row.description(), source);
+            String hash = ImportHasher.hash(
+                    row.date(), row.amount(), row.currency(), row.description(), source, person.getId());
 
             if (claimIfNew(hash, seenInThisFile)) {
                 Transaction transaction = new Transaction();
@@ -144,5 +145,9 @@ public class ImportService {
 
     private boolean claimIfNew(String hash, Set<String> seenInThisFile) {
         return seenInThisFile.add(hash) && !transactionRepository.existsByImportHash(hash);
+    }
+
+    private Person requirePerson(Long personId) {
+        return personRepository.findById(personId).orElseThrow(() -> new ResourceNotFoundException("Person", personId));
     }
 }
