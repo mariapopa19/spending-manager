@@ -13,14 +13,17 @@ import ro.mariapopa.spendingmanager.transaction.Source;
 public final class ImportHasher {
     private ImportHasher() {}
 
-    public static String hash(LocalDate date, BigDecimal amount, String currency, String description, Source source) {
+    public static String hash(
+            LocalDate date, BigDecimal amount, String currency, String description, Source source, Long personId) {
         Objects.requireNonNull(date, "date must not be null");
         Objects.requireNonNull(amount, "amount must not be null");
         Objects.requireNonNull(currency, "currency must not be null");
         Objects.requireNonNull(description, "description must not be null");
         Objects.requireNonNull(source, "source must not be null");
+        Objects.requireNonNull(personId, "personId must not be null");
         String formattedAmount = amount.setScale(2, RoundingMode.HALF_UP).toPlainString();
-        String canonical = String.join("|", date.toString(), formattedAmount, currency, description, source.name());
+        String canonical = String.join(
+                "|", date.toString(), formattedAmount, currency, description, source.name(), personId.toString());
         byte[] digest;
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

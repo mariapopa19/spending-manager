@@ -31,7 +31,7 @@ export const ImportPage = () => {
     if (source === "" || personId === "" || file === null) return;
 
     preview.mutate(
-      { source, file },
+      { source, personId: Number(personId), file },
       {
         onSuccess: (data) => {
           setWizard({ step: "review", preview: data });
