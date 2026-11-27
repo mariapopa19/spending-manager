@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Source, StatsFilters } from "../../types/domain";
-import { usePersons } from "../persons/api";
 import { IMPORT_SOURCES } from "../import/types";
 import { OverviewCards } from "./OverviewCards";
 import { CategoryDonut } from "./CategoryDonut";
@@ -9,6 +8,7 @@ import { BudgetTable } from "./BudgetTable";
 import { TopMerchants } from "./TopMerchants";
 import { currentMonth } from "../../lib/month";
 import { MonthPicker } from "./MonthPicker";
+import { PersonSelect } from "../persons/PersonSelect";
 
 export const DashboardPage = () => {
   const [month, setMonth] = useState(currentMonth);
@@ -16,28 +16,11 @@ export const DashboardPage = () => {
   const [source, setSource] = useState<Source | undefined>();
   const filters: StatsFilters = { month, personId, source };
 
-  const { data: persons } = usePersons();
-
   return (
     <main className="mx-auto max-w-6xl space-y-6 p-6">
       <div className="flex flex-wrap items-end gap-3">
         <MonthPicker month={month} onChange={setMonth} />
-        <select
-          value={personId ?? ""}
-          onChange={(event) =>
-            setPersonId(
-              event.target.value ? Number(event.target.value) : undefined,
-            )
-          }
-          className="rounded-lg border border-gray-200 px-2 py-1"
-        >
-          <option value="">Toate persoanele</option>
-          {persons?.map((person) => (
-            <option key={person.id} value={person.id}>
-              {person.name}
-            </option>
-          ))}
-        </select>
+        <PersonSelect value={personId} onChange={setPersonId} />
         <select
           value={source ?? ""}
           onChange={(event) =>
