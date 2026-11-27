@@ -28,6 +28,8 @@ public class TransactionControllerTest {
     RestTestClient restTestClient;
 
     private static final String BASE_URI = "/api/transactions";
+    private static final long CRISTI = 1L;
+    private static final long MARIA = 2L;
 
     @Test
     void whenUnknownSource_thenReturn400() {
@@ -71,19 +73,9 @@ public class TransactionControllerTest {
         TransactionResponse categorized = createTransaction(existingCategoryId());
 
         try {
-            PageResponse<TransactionResponse> page = restTestClient
-                    .get()
-                    .uri(BASE_URI + "?uncategorized=true&size=1000")
-                    .exchange()
-                    .expectStatus()
-                    .isOk()
-                    .expectBody(new ParameterizedTypeReference<PageResponse<TransactionResponse>>() {})
-                    .returnResult()
-                    .getResponseBody();
-
-            assertThat(page).isNotNull();
-            assertThat(page.content()).allMatch(t -> t.categoryId() == null);
-            assertThat(page.content())
+            List<TransactionResponse> page = findTransactions("uncategorized=true");
+            assertThat(page).allMatch(transaction -> transaction.categoryId() == null);
+            assertThat(page)
                     .extracting(TransactionResponse::id)
                     .contains(uncategorized.id())
                     .doesNotContain(categorized.id());
@@ -298,11 +290,38 @@ public class TransactionControllerTest {
         }
     }
 
+    @Test
+    void whenUncategorizedAndPersonId_thenReturnOnlyThatPersonsUncategorizedTransactions() {
+        TransactionResponse mariaUncategorized = createTransaction(null, "zztest person filter", MARIA);
+        TransactionResponse mariaCategorized = createTransaction(existingCategoryId(), "zztest person filter", MARIA);
+        TransactionResponse cristiUncategorized = createTransaction(null, "zztest person filter", CRISTI);
+
+        try {
+            List<TransactionResponse> returnedTransactions = findTransactions("uncategorized=true&personId=" + MARIA);
+
+            assertThat(returnedTransactions)
+                    .allMatch(transaction -> transaction.personId().equals(MARIA))
+                    .allMatch(transaction -> transaction.categoryId() == null);
+            assertThat(returnedTransactions)
+                    .extracting(TransactionResponse::id)
+                    .contains(mariaUncategorized.id())
+                    .doesNotContain(mariaCategorized.id(), cristiUncategorized.id());
+        } finally {
+            deleteTransaction(mariaUncategorized.id());
+            deleteTransaction(mariaCategorized.id());
+            deleteTransaction(cristiUncategorized.id());
+        }
+    }
+
     private TransactionResponse createTransaction(Long categoryId) {
-        return createTransaction(categoryId, "uncategorized filter test");
+        return createTransaction(categoryId, "uncategorized filter test", CRISTI);
     }
 
     private TransactionResponse createTransaction(Long categoryId, String description) {
+        return createTransaction(categoryId, description, CRISTI);
+    }
+
+    private TransactionResponse createTransaction(Long categoryId, String description, Long personId) {
         TransactionRequest request = new TransactionRequest(
                 LocalDate.of(2026, 6, 1),
                 new BigDecimal("-12.50"),
@@ -310,7 +329,7 @@ public class TransactionControllerTest {
                 description,
                 null,
                 categoryId,
-                1L,
+                personId,
                 Source.REVOLUT);
         return postTransaction(request)
                 .expectStatus()
@@ -330,6 +349,20 @@ public class TransactionControllerTest {
                 .expectBody(TransactionResponse.class)
                 .returnResult()
                 .getResponseBody();
+    }
+
+    private List<TransactionResponse> findTransactions(String queryString) {
+        PageResponse<TransactionResponse> page = restTestClient
+                .get()
+                .uri(BASE_URI + "?" + queryString + "&size=1000")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(new ParameterizedTypeReference<PageResponse<TransactionResponse>>() {})
+                .returnResult()
+                .getResponseBody();
+        assertThat(page).isNotNull();
+        return page.content();
     }
 
     private RestTestClient.ResponseSpec postTransaction(Object body) {

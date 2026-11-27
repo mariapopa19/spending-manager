@@ -33,12 +33,10 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TransactionResponse> findAll(Pageable pageable, boolean uncategorized) {
-        if (uncategorized) {
-            return transactionRepository.findByCategoryIsNull(pageable).map(this::toResponse);
-        } else {
-            return transactionRepository.findAll(pageable).map(this::toResponse);
-        }
+    public Page<TransactionResponse> findAll(Pageable pageable, TransactionFilter filter) {
+        return transactionRepository
+                .findAll(TransactionSpecifications.matching(filter), pageable)
+                .map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
