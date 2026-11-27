@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "../../lib/apiClient";
 import type { UpdateArgs } from "../../lib/api.types";
 import type { Page, Transaction } from "../../types/domain";
@@ -8,15 +13,26 @@ export type SetCategoryInput = {
   createRule?: { pattern: string };
 };
 
-export const useUncategorized = (page: number, size: number = 20) => {
+export const useUncategorized = (
+  page: number,
+  personId?: number,
+  size: number = 20,
+) => {
   return useQuery({
-    queryKey: ["transactions", "uncategorized", page, size],
-    queryFn: async () => {
-      const response = await api.get<Page<Transaction>>(
-        `/transactions?uncategorized=true&page=${page}&size=${size}&sort=date,desc`,
-      );
-      return response.data;
-    },
+    queryKey: ["transactions", "uncategorized", { page, size, personId }],
+    queryFn: async () =>
+      (
+        await api.get<Page<Transaction>>("/transactions", {
+          params: {
+            uncategorized: true,
+            personId,
+            page,
+            size,
+            sort: "date,desc",
+          },
+        })
+      ).data,
+    placeholderData: keepPreviousData,
   });
 };
 
