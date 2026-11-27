@@ -40,7 +40,7 @@ export const ReviewRow = ({ transaction, categories }: Props) => {
     <li className="rounded-lg border border-gray-200 p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs text-gray-500">{transaction.date}</p>
+          <p className="text-xs text-gray-500">{transaction.date} · {transaction.personName}</p>
           <button
             type="button"
             className={`w-full appearance-none bg-transparent p-0 text-left text-sm wrap-break-word ${expanded ? "" : "line-clamp-2"}`}
